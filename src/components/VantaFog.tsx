@@ -4,7 +4,7 @@ import Script from "next/script";
 
 export default function VantaFog() {
     return (
-        <div className="h-screen bg-linear-to-b from-white to-20% to-transparent">
+        <div className="h-screen bg-linear-to-b from-white to-25% to-transparent">
             <div
                 className="absolute -z-1 w-screen h-screen"
                 id="vanta-fog"

@@ -47,12 +47,12 @@ export default function Button({
         >
             {/* Mouse-following ripple overlay */}
             <motion.div
-                className="absolute bg-gradient-to-r from-[#0F2027] via-[#203A43] to-[#2C5364] rounded-full pointer-events-none"
+                className="absolute bg-gradient-to-r from-[#000000] via-[#203A43] to-[#7dd8ff] rounded-full pointer-events-none opacity-0"
                 style={{
-                    left: mousePosition.x - 75,
-                    top: mousePosition.y - 75,
-                    width: 150,
-                    height: 150,
+                    left: mousePosition.x - 62,
+                    top: mousePosition.y - 62,
+                    width: 125,
+                    height: 125,
                 }}
                 animate={{
                     opacity: isHovered ? 1 : 0,

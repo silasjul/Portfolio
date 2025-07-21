@@ -8,7 +8,7 @@ export default function Hero() {
     return (
         <div className="relative min-h-screen overflow-x-hidden">
             <Navbar />
-            <motion.h1 className="text-9xl mt-[10%] mb-[10%] ml-8">
+            <motion.h1 className="text-9xl mt-[10%] mb-[8%] ml-8">
                 Optimized websites,
                 <br />
                 powerful automations.
