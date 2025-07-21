@@ -15,9 +15,14 @@ My freelancing website
 </div>
 
 ## Description
-I wanted to start freelancing, so I wanted to create a site showcasing my work and services as a freelancer specializing in custom website development with React and smart AI automation.
+I wanted to start freelancing, so I'm creating a site showcasing my work and services as a freelancer specializing in custom website development with React and smart AI automation.
 
-## Pages and Features
+## Features
+- Awesome animations.
+- Expensive looking buttons.
+- Chatbot you can ask questions about me and what I do or can help you with.
+
+## Pages
 
 1. **Landing Page**
    - A stunning hero section with sleek text reveal animations to capture attention and introduce the portfolio.
