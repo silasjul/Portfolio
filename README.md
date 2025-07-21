@@ -1,6 +1,21 @@
-# Portfolio Website for SiLab.dk
+<div align="center">
+<pre>
+███████╗██╗██╗      █████╗ ██████╗ 
+██╔════╝██║██║     ██╔══██╗██╔══██╗
+███████╗██║██║     ███████║██████╔╝
+╚════██║██║██║     ██╔══██║██╔══██╗
+███████║██║███████╗██║  ██║██████╔╝
+╚══════╝╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ 
+------------------------------------
+My freelancing website
+</pre>
 
-This is the portfolio website for SiLab.dk, showcasing my work and services as a freelancer specializing in custom website development with React and smart automation using n8n agents.
+[![Next.js](https://img.shields.io/badge/Next-black?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
+
+</div>
+
+## Description
+I wanted to start freelancing, so I wanted to create a site showcasing my work and services as a freelancer specializing in custom website development with React and smart AI automation.
 
 ## Pages and Features
 
