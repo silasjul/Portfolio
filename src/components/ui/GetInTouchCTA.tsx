@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import React, { useState } from "react";
+import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 
-export default function Button({
+export default function GetInTouchCTA({
     children,
     className,
     arrow,
@@ -35,10 +35,10 @@ export default function Button({
     return (
         <motion.button
             className={
-                "relative px-6 py-2 text-black rounded-full bg-secondary text-lg shadow-md flex items-center space-x-2 overflow-hidden hover:cursor-pointer " +
+                'relative px-6 py-2 text-black rounded-full bg-secondary text-lg shadow-md flex items-center space-x-2 overflow-hidden hover:cursor-pointer ' +
                 className
             }
-            whileHover={{ scale: 1.05, color: "white" }}
+            whileHover={{ scale: 1.05, color: 'white' }}
             whileTap={{ scale: 0.95 }}
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
@@ -47,7 +47,7 @@ export default function Button({
         >
             {/* Mouse-following ripple overlay */}
             <motion.div
-                className="absolute bg-gradient-to-r from-[#000000] via-[#203A43] to-[#7dd8ff] rounded-full pointer-events-none opacity-0"
+                className="absolute bg-black rounded-full pointer-events-none opacity-0"
                 style={{
                     left: mousePosition.x - 62,
                     top: mousePosition.y - 62,
@@ -58,7 +58,7 @@ export default function Button({
                     opacity: isHovered ? 1 : 0,
                     scale: isHovered ? 3 : 0,
                 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
             />
 
             {/* Button content */}
@@ -75,7 +75,7 @@ export default function Button({
                     transition={{
                         duration: 2,
                         repeat: Infinity,
-                        ease: "easeInOut",
+                        ease: 'easeInOut',
                     }}
                     variants={{
                         hover: {

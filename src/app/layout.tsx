@@ -1,3 +1,4 @@
+import React from "react";
 import { Metadata } from "next";
 import { ReactLenis } from "lenis/react";
 import { Playfair_Display, Spline_Sans } from "next/font/google";
