@@ -9,7 +9,7 @@ export default function VantaFog() {
     () => (
       <div className="h-full w-full">
         <div
-          className={`absolute -z-1 w-screen h-full`}
+          className={`absolute h-full w-full -z-1`}
           id="vanta-fog"
         />
         <Script
