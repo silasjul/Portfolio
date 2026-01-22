@@ -98,6 +98,7 @@ export default function About() {
               <div className="flex flex-wrap gap-3">
                 {expertise.map((skill, index) => (
                   <span
+                    key={skill}
                     className="px-4 py-2 text-sm text-white/70 bg-white/[0.05] rounded-full border border-white/[0.08] hover:border-[#35a9ff]/50 hover:text-white transition-all duration-300"
                   >
                     {skill}

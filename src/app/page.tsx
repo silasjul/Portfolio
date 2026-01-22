@@ -5,25 +5,27 @@ import Works from "@/components/sections/Works";
 import About from "@/components/sections/About";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/sections/Footer";
-import { VantaBackground } from "@/components/VantaFog";
+import { VantaParallaxBackground } from "@/components/VantaFog";
 
 export default function Home() {
   return (
-    <main className="relative">
+    <main className="relative min-h-screen">
+      {/* Single Vanta background with parallax - spans entire page */}
+      <VantaParallaxBackground />
+
       {/* Hero Section */}
       <section className="relative h-screen">
-        <VantaBackground />
         <Navbar />
         <Hero />
       </section>
 
-      {/* Content Sections with transparent blend at top */}
-      <div className="relative">
-          <Services />
-          <Works />
-          <About />
-          <Contact />
-          <Footer />
+      {/* Content Sections - all with consistent transparent/glassmorphism styling */}
+      <div className="relative top-[10vhs]">
+        <Services />
+        <Works />
+        <About />
+        <Contact />
+        <Footer />
       </div>
     </main>
   );

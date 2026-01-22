@@ -1,15 +1,14 @@
 'use client';
 
 import Script from 'next/script';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 
 export default function VantaFog() {
-
   return useMemo(
     () => (
       <div className="h-full w-full">
         <div
-          className={`absolute h-full w-full -z-1`}
+          className="absolute h-full w-full"
           id="vanta-fog"
         />
         <Script
@@ -34,19 +33,64 @@ export default function VantaFog() {
   );
 }
 
-export function VantaBackground() {
-  /* Cool hue filter */
+export function VantaParallaxBackground() {
   const [hue, setHue] = useState(260);
+  const [scrollY, setScrollY] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
+  // Slow hue rotation for color variation
   useEffect(() => {
-    let direction = -1
+    let direction = -1;
     const intervalId = setInterval(() => {
       setHue((prevHue) => {
         if (prevHue > 260) direction = -1;
         if (prevHue < 180) direction = 1;
-        console.log(prevHue)
         return (prevHue + direction) % 360;
-      })
+      });
+    }, 200);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Parallax scroll effect - background moves at 10% of scroll speed
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const parallaxOffset = scrollY * 0.3; // Very slow parallax (10% of scroll speed)
+
+  return (
+    <div
+      ref={containerRef}
+      className="fixed top-0 left-0 w-full h-[110vh] -z-10"
+      style={{
+        filter: `hue-rotate(${hue}deg)`,
+        transform: `translateY(-${parallaxOffset}px)`,
+        willChange: 'transform',
+      }}
+    >
+      <VantaFog />
+    </div>
+  );
+}
+
+// Keep the old export for backwards compatibility if needed
+export function VantaBackground() {
+  const [hue, setHue] = useState(260);
+
+  useEffect(() => {
+    let direction = -1;
+    const intervalId = setInterval(() => {
+      setHue((prevHue) => {
+        if (prevHue > 260) direction = -1;
+        if (prevHue < 180) direction = 1;
+        return (prevHue + direction) % 360;
+      });
     }, 200);
 
     return () => clearInterval(intervalId);
@@ -55,7 +99,8 @@ export function VantaBackground() {
   return (
     <div
       className="absolute top-[0%] inset-0 -z-10"
-      style={{ filter: `hue-rotate(${hue}deg)` }}>
+      style={{ filter: `hue-rotate(${hue}deg)` }}
+    >
       <VantaFog />
     </div>
   );
