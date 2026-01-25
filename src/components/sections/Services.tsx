@@ -23,7 +23,7 @@ const services = [
     icon: Rocket,
     title: "Performance & Growth",
     description:
-      "Speed is revenue. I optimize for lightning-fast load times, SEO excellence, and conversion-focused architecture.",
+      "Speed is revenue. We optimize for lightning-fast load times, SEO excellence, and conversion-focused architecture.",
     tags: ["Core Web Vitals", "SEO", "Analytics"],
   },
   {
@@ -55,7 +55,7 @@ export default function Services() {
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
-            What I Do
+            What We Do
           </span>
           <h2 className="text-5xl md:text-7xl text-black mt-4 font-[family-name:var(--font-playfair)]">
             Services

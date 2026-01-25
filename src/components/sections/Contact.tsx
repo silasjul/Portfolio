@@ -32,7 +32,7 @@ export default function Contact() {
               your project?
             </h2>
             <p className="text-black/50 text-lg max-w-md mb-10 leading-relaxed">
-              I&apos;m always excited to discuss new opportunities and
+              We&apos;re always excited to discuss new opportunities and
               challenges. Let&apos;s talk about how we can work together to
               bring your vision to life.
             </p>
