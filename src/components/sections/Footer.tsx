@@ -16,7 +16,7 @@ const navLinks = [
 
 export default function Footer() {
   return (
-    <footer className="relative py-16 px-8 md:px-16 lg:px-24 bg-[#0a0a0a] border-t border-white/[0.05]">
+    <footer className="relative py-16 px-8 md:px-16 lg:px-24 bg-white/40 backdrop-blur-sm border-t border-black/10">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
 
@@ -26,7 +26,7 @@ export default function Footer() {
               <a
                 key={link.name}
                 href={link.href}
-                className="text-white/60 hover:text-white transition-colors duration-200 text-base"
+                className="text-black/60 hover:text-black transition-colors duration-200 text-base"
               >
                 {link.name}
               </a>
@@ -39,7 +39,7 @@ export default function Footer() {
               <motion.a
                 key={link.name}
                 href={link.href}
-                className="text-white/50 hover:text-[#35a9ff] transition-colors duration-200 text-sm"
+                className="text-black/50 hover:text-[#0077cc] transition-colors duration-200 text-sm"
                 whileHover={{ y: -2 }}
               >
                 {link.name}
@@ -47,7 +47,7 @@ export default function Footer() {
             ))}
           </div>
           {/* Logo & Copyright */}
-          <p className="text-white/30 text-sm">
+          <p className="text-black/40 text-sm">
             © {new Date().getFullYear()} All rights reserved.
           </p>
         </div>

@@ -33,7 +33,7 @@ export default function VantaFog() {
   );
 }
 
-export function VantaParallaxBackground() {
+export function VantaParallaxBackground({ scrollspeed = 0.05 }: { scrollspeed?: number }) {
   const [hue, setHue] = useState(260);
   const [scrollY, setScrollY] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -62,12 +62,12 @@ export function VantaParallaxBackground() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const parallaxOffset = scrollY * 0.3; // Very slow parallax (10% of scroll speed)
+  const parallaxOffset = scrollY * scrollspeed;
 
   return (
     <div
       ref={containerRef}
-      className="fixed top-0 left-0 w-full h-[110vh] -z-10"
+      className="fixed top-0 left-0 w-full h-[140vh] -z-10"
       style={{
         filter: `hue-rotate(${hue}deg)`,
         transform: `translateY(-${parallaxOffset}px)`,

@@ -11,10 +11,8 @@ export default function Contact() {
   return (
     <section
       ref={containerRef}
-      className="relative py-32 px-8 md:px-16 lg:px-24 bg-[#fafafa] overflow-hidden"
+      className="relative py-32 px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden"
     >
-      {/* Background accent */}
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#35a9ff]/5 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2" />
 
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
@@ -24,7 +22,7 @@ export default function Contact() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <span className="text-[#35a9ff] text-sm tracking-[0.3em] uppercase font-medium">
+            <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
               Let&apos;s Connect
             </span>
             <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-[family-name:var(--font-playfair)]">
@@ -41,7 +39,7 @@ export default function Contact() {
             {/* Main CTA Button */}
             <motion.a
               href="mailto:hello@example.com"
-              className="group inline-flex items-center gap-4 px-8 py-5 bg-black text-white rounded-full text-lg font-medium hover:bg-[#35a9ff] transition-colors duration-300"
+              className="group inline-flex items-center gap-4 px-8 py-5 bg-black text-white rounded-full text-lg font-medium hover:bg-[#0077cc] transition-colors duration-300"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -116,13 +114,13 @@ function ContactCard({
 }) {
   const content = (
     <motion.div
-      className="group flex items-center gap-6 p-6 rounded-2xl bg-black/[0.02] border border-black/[0.05] hover:border-[#35a9ff]/30 transition-colors duration-300"
+      className="group flex items-center gap-6 p-6 rounded-2xl bg-white/40 backdrop-blur-sm border border-black/10 hover:border-[#0077cc]/30 transition-colors duration-300"
       initial={{ opacity: 0, x: 30 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      <div className="w-14 h-14 rounded-xl bg-[#35a9ff]/10 flex items-center justify-center group-hover:bg-[#35a9ff]/20 transition-colors duration-300">
-        <Icon className="w-6 h-6 text-[#35a9ff]" />
+      <div className="w-14 h-14 rounded-xl bg-[#0077cc]/10 flex items-center justify-center group-hover:bg-[#0077cc]/20 transition-colors duration-300">
+        <Icon className="w-6 h-6 text-[#0077cc]" />
       </div>
       <div>
         <span className="text-black/40 text-sm uppercase tracking-wider block">

@@ -10,7 +10,6 @@ import { VantaParallaxBackground } from "@/components/VantaFog";
 export default function Home() {
   return (
     <main className="relative min-h-screen">
-      {/* Single Vanta background with parallax - spans entire page */}
       <VantaParallaxBackground />
 
       {/* Hero Section */}
@@ -19,8 +18,7 @@ export default function Home() {
         <Hero />
       </section>
 
-      {/* Content Sections - all with consistent transparent/glassmorphism styling */}
-      <div className="relative top-[10vhs]">
+      <div className="relative">
         <Services />
         <Works />
         <About />

@@ -55,7 +55,7 @@ export default function Works() {
     <section
       id="works"
       ref={containerRef}
-      className="relative min-h-screen py-32 px-8 md:px-16 lg:px-24 bg-[#fafafa] scroll-mt-32"
+      className="relative min-h-screen py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
@@ -66,7 +66,7 @@ export default function Works() {
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <div>
-            <span className="text-[#35a9ff] text-sm tracking-[0.3em] uppercase font-medium">
+            <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
               Portfolio
             </span>
             <h2 className="text-5xl md:text-7xl text-black mt-4 font-[family-name:var(--font-playfair)]">
@@ -137,7 +137,7 @@ function ProjectRow({
               0{index + 1}
             </span>
             <div>
-              <h3 className="text-2xl md:text-4xl text-black font-[family-name:var(--font-playfair)] group-hover:text-[#35a9ff] transition-colors duration-300">
+              <h3 className="text-2xl md:text-4xl text-black font-[family-name:var(--font-playfair)] group-hover:text-[#0077cc] transition-colors duration-300">
                 {project.title}
               </h3>
               <span className="text-black/40 text-sm mt-1 block">

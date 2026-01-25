@@ -10,7 +10,6 @@ import { useLenis } from 'lenis/react';
 const transition: Transition = { duration: 1.3, ease: 'anticipate', delay: .3 }
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const lenis = useLenis();
 
   const scrollTo = (target: string) => {

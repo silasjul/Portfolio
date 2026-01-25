@@ -43,16 +43,8 @@ export default function Services() {
     <section
       id="services"
       ref={containerRef}
-      className="relative min-h-screen py-32 px-8 md:px-16 lg:px-24 bg-[#0a0a0a] scroll-mt-32"
+      className="relative min-h-screen py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
     >
-      {/* Subtle grid background */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
-          backgroundSize: "60px 60px",
-        }}
-      />
 
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Section Header */}
@@ -62,10 +54,10 @@ export default function Services() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <span className="text-[#35a9ff] text-sm tracking-[0.3em] uppercase font-medium">
+          <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
             What I Do
           </span>
-          <h2 className="text-5xl md:text-7xl text-white mt-4 font-[family-name:var(--font-playfair)]">
+          <h2 className="text-5xl md:text-7xl text-black mt-4 font-[family-name:var(--font-playfair)]">
             Services
           </h2>
         </motion.div>
@@ -99,7 +91,7 @@ function ServiceCard({
 
   return (
     <motion.div
-      className="group relative p-8 md:p-10 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:border-[#35a9ff]/30 transition-colors duration-500"
+      className="group relative p-8 md:p-10 rounded-2xl bg-white/40 backdrop-blur-sm border border-black/10 hover:border-[#0077cc]/30 transition-colors duration-500"
       initial={{ opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{
@@ -109,21 +101,21 @@ function ServiceCard({
       }}
     >
       {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#35a9ff]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0077cc]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative z-10">
         {/* Icon */}
-        <div className="w-12 h-12 rounded-xl bg-[#35a9ff]/10 flex items-center justify-center mb-6 group-hover:bg-[#35a9ff]/20 transition-colors duration-300">
-          <Icon className="w-6 h-6 text-[#35a9ff]" />
+        <div className="w-12 h-12 rounded-xl bg-[#0077cc]/10 flex items-center justify-center mb-6 group-hover:bg-[#0077cc]/20 transition-colors duration-300">
+          <Icon className="w-6 h-6 text-[#0077cc]" />
         </div>
 
         {/* Title */}
-        <h3 className="text-2xl md:text-3xl text-white mb-4 font-[family-name:var(--font-playfair)]">
+        <h3 className="text-2xl md:text-3xl text-black mb-4 font-[family-name:var(--font-playfair)]">
           {service.title}
         </h3>
 
         {/* Description */}
-        <p className="text-white/60 text-lg leading-relaxed mb-6">
+        <p className="text-black/70 text-lg leading-relaxed mb-6">
           {service.description}
         </p>
 
@@ -132,7 +124,7 @@ function ServiceCard({
           {service.tags.map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1 text-sm text-white/40 bg-white/[0.03] rounded-full border border-white/[0.05]"
+              className="px-3 py-1 text-sm text-black/50 bg-black/[0.05] rounded-full border border-black/10"
             >
               {tag}
             </span>
