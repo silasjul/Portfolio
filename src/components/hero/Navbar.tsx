@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import GetInTouchCTA from '../ui/GetInTouchCTA';
 import { useLenis } from 'lenis/react';
+import BookingWrapper from '../BookingWrapper';
 
 const transition: Transition = { duration: 1.3, ease: 'anticipate', delay: .3 }
 
@@ -57,14 +58,16 @@ function Logo({ scrollTo }: { scrollTo: (target: string) => void }) {
 
 function CTA() {
   return (
-    <motion.div
-      className="inline-block"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={transition}
-    >
-      <GetInTouchCTA arrow={true}>Get In Touch</GetInTouchCTA>
-    </motion.div>
+    <BookingWrapper theme="light">
+      <motion.div
+        className="inline-block"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={transition}
+      >
+        <GetInTouchCTA arrow={true}>Get In Touch</GetInTouchCTA>
+      </motion.div>
+    </BookingWrapper>
   )
 }
 

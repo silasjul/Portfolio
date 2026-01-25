@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, Mail, MapPin, Clock } from "lucide-react";
+import BookingWrapper from "../BookingWrapper";
 
 export default function Contact() {
   const containerRef = useRef(null);
@@ -37,21 +38,23 @@ export default function Contact() {
             </p>
 
             {/* Main CTA Button */}
-            <motion.a
-              href="mailto:hello@example.com"
-              className="group inline-flex items-center gap-4 px-8 py-5 bg-black text-white rounded-full text-lg font-medium hover:bg-[#0077cc] transition-colors duration-300"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span>Get In Touch</span>
+            <BookingWrapper theme="light">
               <motion.div
-                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+                className="group inline-flex items-center gap-4 px-8 py-5 bg-black text-white rounded-full shadow-md hover:bg-white hover:text-black text-lg font-base transition-colors duration-300 cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
               >
-                <ArrowRight className="w-5 h-5" />
+                <span>Get In Touch</span>
+                <motion.div
+                  className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-black/10 flex items-center justify-center transition-colors duration-300"
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <ArrowRight className="w-5 h-5" />
+                </motion.div>
               </motion.div>
-            </motion.a>
+            </BookingWrapper>
           </motion.div>
 
           {/* Right Column - Contact Info */}
@@ -70,8 +73,8 @@ export default function Contact() {
               <ContactCard
                 icon={Mail}
                 label="Email"
-                value="hello@silab.dev"
-                href="mailto:hello@silab.dev"
+                value="contact@silab.dk"
+                href="mailto:contact@silab.dk"
                 delay={0.3}
                 isInView={isInView}
               />

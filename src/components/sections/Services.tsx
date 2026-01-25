@@ -31,7 +31,7 @@ const services = [
     title: "System Architecture",
     description:
       "Scalable infrastructure that grows with your business. Clean code, clear documentation, future-proof foundations.",
-    tags: ["AWS", "Docker", "CI/CD", "APIs"],
+    tags: ["Google Cloud", "Docker", "CI/CD", "APIs"],
   },
 ];
 
@@ -43,7 +43,7 @@ export default function Services() {
     <section
       id="services"
       ref={containerRef}
-      className="relative min-h-screen py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
+      className="relative min-h-screen py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
     >
 
       <div className="relative z-10 max-w-7xl mx-auto">

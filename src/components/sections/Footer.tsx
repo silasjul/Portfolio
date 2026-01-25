@@ -1,11 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLenis } from 'lenis/react';
 
 const socialLinks = [
-  { name: "LinkedIn", href: "#" },
-  { name: "GitHub", href: "#" },
-  { name: "Twitter", href: "#" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/company/silab-studio" },
 ];
 
 const navLinks = [
@@ -15,6 +14,16 @@ const navLinks = [
 ];
 
 export default function Footer() {
+  const lenis = useLenis();
+
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    lenis?.scrollTo(href, {
+      duration: 1.5,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) // easeOutExpo
+    });
+  };
+
   return (
     <footer className="relative py-16 px-8 md:px-16 lg:px-24 bg-white/40 backdrop-blur-sm border-t border-black/10">
       <div className="max-w-7xl mx-auto">
@@ -26,6 +35,7 @@ export default function Footer() {
               <a
                 key={link.name}
                 href={link.href}
+                onClick={(e) => handleSmoothScroll(e, link.href)}
                 className="text-black/60 hover:text-black transition-colors duration-200 text-base"
               >
                 {link.name}
@@ -39,8 +49,8 @@ export default function Footer() {
               <motion.a
                 key={link.name}
                 href={link.href}
-                className="text-black/50 hover:text-[#0077cc] transition-colors duration-200 text-sm"
-                whileHover={{ y: -2 }}
+                target="_blank"
+                className="text-black/50 hover:text-black transition-colors duration-200 text-sm"
               >
                 {link.name}
               </motion.a>
@@ -48,7 +58,7 @@ export default function Footer() {
           </div>
           {/* Logo & Copyright */}
           <p className="text-black/40 text-sm">
-            © {new Date().getFullYear()} All rights reserved.
+            © 2026 Silab. All rights reserved.
           </p>
         </div>
       </div>

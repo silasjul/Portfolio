@@ -3,38 +3,46 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
-const capabilities = [
+const projects = [
   {
     id: 1,
-    title: "AI-Powered Applications",
-    category: "AI Integration",
+    title: "E-Commerce Platform",
+    category: "Fullstack",
     description:
-      "Intelligent tools that leverage LLMs and machine learning—from document processing to chatbots and automated workflows.",
-    tech: ["Python", "OpenAI", "React"],
+      "High-performance online store with AI-powered product recommendations and seamless checkout experience.",
+    image: "/api/placeholder/800/600",
+    tech: ["Next.js", "Stripe", "PostgreSQL"],
+    color: "#35a9ff",
   },
   {
     id: 2,
-    title: "Custom Web Applications",
-    category: "Web Development",
+    title: "AI Document Assistant",
+    category: "AI Integration",
     description:
-      "Dashboards, admin panels, and SaaS platforms with real-time features, data visualization, and seamless user experiences.",
-    tech: ["React", "TypeScript", "Node.js"],
+      "Intelligent document processing system that extracts, summarizes, and answers questions from uploaded files.",
+    image: "/api/placeholder/800/600",
+    tech: ["Python", "OpenAI", "React"],
+    color: "#ff6b35",
   },
   {
     id: 3,
-    title: "Business Websites",
-    category: "Frontend Development",
+    title: "SaaS Dashboard",
+    category: "Web App",
     description:
-      "Fast, responsive, and beautifully designed websites that convert visitors into customers. SEO-optimized and mobile-first.",
-    tech: ["Next.js", "Tailwind", "Vercel"],
+      "Real-time analytics dashboard with custom visualizations and automated reporting capabilities.",
+    image: "/api/placeholder/800/600",
+    tech: ["React", "D3.js", "Node.js"],
+    color: "#35ffa9",
   },
   {
     id: 4,
-    title: "E-Commerce Solutions",
-    category: "Fullstack Development",
+    title: "Booking System",
+    category: "Fullstack",
     description:
-      "Online stores with payment integration, inventory management, and optimized checkout flows. Built with modern frameworks for speed and scalability.",
-    tech: ["Next.js", "Stripe", "PostgreSQL"],
+      "Modern appointment scheduling platform with calendar integration and automated reminders.",
+    image: "/api/placeholder/800/600",
+    tech: ["Next.js", "Prisma", "Twilio"],
+    color: "#a935ff",
   },
 ];
 
@@ -47,7 +55,7 @@ export default function Works() {
     <section
       id="works"
       ref={containerRef}
-      className="relative min-h-screen py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
+      className="relative min-h-screen py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
@@ -59,28 +67,28 @@ export default function Works() {
         >
           <div>
             <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
-              Capabilities
+              Portfolio
             </span>
             <h2 className="text-5xl md:text-7xl text-black mt-4 font-[family-name:var(--font-playfair)]">
-              What We Build
+              Selected Works
             </h2>
           </div>
           <p className="text-black/50 text-lg max-w-md mt-6 md:mt-0">
-            Types of projects we specialize in and are ready to take on.
-            Let&apos;s create something great together.
+            A curated selection of projects that showcase my expertise in
+            building digital experiences.
           </p>
         </motion.div>
 
-        {/* Capabilities List */}
+        {/* Projects List */}
         <div className="space-y-4">
-          {capabilities.map((item, index) => (
-            <CapabilityRow
-              key={item.id}
-              item={item}
+          {projects.map((project, index) => (
+            <ProjectRow
+              key={project.id}
+              project={project}
               index={index}
               isInView={isInView}
-              isHovered={hoveredId === item.id}
-              onHover={() => setHoveredId(item.id)}
+              isHovered={hoveredId === project.id}
+              onHover={() => setHoveredId(project.id)}
               onLeave={() => setHoveredId(null)}
             />
           ))}
@@ -90,15 +98,15 @@ export default function Works() {
   );
 }
 
-function CapabilityRow({
-  item,
+function ProjectRow({
+  project,
   index,
   isInView,
   isHovered,
   onHover,
   onLeave,
 }: {
-  item: (typeof capabilities)[0];
+  project: (typeof projects)[0];
   index: number;
   isInView: boolean;
   isHovered: boolean;
@@ -118,8 +126,9 @@ function CapabilityRow({
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
     >
-      <div
-        className="block py-8 border-b border-black/10 hover:border-black/30 transition-colors duration-300 cursor-default"
+      <a
+        href="#"
+        className="block py-8 border-b border-black/10 hover:border-black/30 transition-colors duration-300"
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           {/* Left side - Number & Title */}
@@ -129,17 +138,17 @@ function CapabilityRow({
             </span>
             <div>
               <h3 className="text-2xl md:text-4xl text-black font-[family-name:var(--font-playfair)] group-hover:text-[#0077cc] transition-colors duration-300">
-                {item.title}
+                {project.title}
               </h3>
               <span className="text-black/40 text-sm mt-1 block">
-                {item.category}
+                {project.category}
               </span>
             </div>
           </div>
 
           {/* Right side - Tech */}
           <div className="hidden lg:flex gap-2">
-            {item.tech.map((tech) => (
+            {project.tech.map((tech) => (
               <span
                 key={tech}
                 className="px-3 py-1 text-sm text-black/50 bg-black/[0.03] rounded-full"
@@ -150,10 +159,7 @@ function CapabilityRow({
           </div>
         </div>
 
-        {/* Description - always visible on mobile, expandable on hover for desktop */}
-        <p className="md:hidden text-black/50 text-base max-w-2xl pt-4 pl-10">
-          {item.description}
-        </p>
+        {/* Expandable description on hover (desktop only) */}
         <motion.div
           className="hidden md:block overflow-hidden"
           initial={{ height: 0, opacity: 0 }}
@@ -164,10 +170,10 @@ function CapabilityRow({
           transition={{ duration: 0.3 }}
         >
           <p className="text-black/50 text-lg max-w-2xl pt-4 pl-16 md:pl-20">
-            {item.description}
+            {project.description}
           </p>
         </motion.div>
-      </div>
+      </a>
     </motion.div>
   );
 }
