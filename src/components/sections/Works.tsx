@@ -65,7 +65,7 @@ export default function Works() {
               What We Build
             </h2>
           </div>
-          <p className="text-black/50 text-lg max-w-md mt-6 md:mt-0">
+          <p className="text-black/70 text-lg max-w-md mt-6 md:mt-0">
             Types of projects we specialize in and are ready to take on.
             Let&apos;s create something great together.
           </p>
@@ -124,14 +124,14 @@ function CapabilityRow({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           {/* Left side - Number & Title */}
           <div className="flex items-center gap-6 md:gap-10">
-            <span className="text-black/20 text-sm tabular-nums">
+            <span className="text-black/30 text-sm tabular-nums font-medium">
               0{index + 1}
             </span>
             <div>
               <h3 className="text-2xl md:text-4xl text-black font-[family-name:var(--font-playfair)] group-hover:text-[#0077cc] transition-colors duration-300">
                 {item.title}
               </h3>
-              <span className="text-black/40 text-sm mt-1 block">
+              <span className="text-black/60 text-sm mt-1 block">
                 {item.category}
               </span>
             </div>
@@ -142,7 +142,7 @@ function CapabilityRow({
             {item.tech.map((tech) => (
               <span
                 key={tech}
-                className="px-3 py-1 text-sm text-black/50 bg-black/[0.03] rounded-full"
+                className="px-3 py-1 text-sm text-black/70 bg-black/[0.05] rounded-full border border-black/10"
               >
                 {tech}
               </span>
@@ -151,7 +151,7 @@ function CapabilityRow({
         </div>
 
         {/* Description - always visible on mobile, expandable on hover for desktop */}
-        <p className="md:hidden text-black/50 text-base max-w-2xl pt-4 pl-10">
+        <p className="md:hidden text-black/70 text-base max-w-2xl pt-4 pl-10">
           {item.description}
         </p>
         <motion.div
@@ -163,7 +163,7 @@ function CapabilityRow({
           }}
           transition={{ duration: 0.3 }}
         >
-          <p className="text-black/50 text-lg max-w-2xl pt-4 pl-16 md:pl-20">
+          <p className="text-black/70 text-lg max-w-2xl pt-4 pl-16 md:pl-20">
             {item.description}
           </p>
         </motion.div>

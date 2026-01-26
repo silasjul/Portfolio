@@ -115,7 +115,7 @@ function ServiceCard({
         </h3>
 
         {/* Description */}
-        <p className="text-black/70 text-lg leading-relaxed mb-6">
+        <p className="text-black/80 text-lg leading-relaxed mb-6">
           {service.description}
         </p>
 
@@ -124,7 +124,7 @@ function ServiceCard({
           {service.tags.map((tag) => (
             <span
               key={tag}
-              className="px-3 py-1 text-sm text-black/50 bg-black/[0.05] rounded-full border border-black/10"
+              className="px-3 py-1 text-sm text-black/70 bg-black/[0.05] rounded-full border border-black/10"
             >
               {tag}
             </span>

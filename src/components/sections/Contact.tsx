@@ -31,7 +31,7 @@ export default function Contact() {
               <br />
               your project?
             </h2>
-            <p className="text-black/50 text-lg max-w-md mb-10 leading-relaxed">
+            <p className="text-black/70 text-lg max-w-md mb-10 leading-relaxed">
               We&apos;re always excited to discuss new opportunities and
               challenges. Let&apos;s talk about how we can work together to
               bring your vision to life.
@@ -126,7 +126,7 @@ function ContactCard({
         <Icon className="w-6 h-6 text-[#0077cc]" />
       </div>
       <div>
-        <span className="text-black/40 text-sm uppercase tracking-wider block">
+        <span className="text-black/60 text-sm uppercase tracking-wider block font-medium">
           {label}
         </span>
         <span className="text-black text-xl">{value}</span>

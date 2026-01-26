@@ -52,7 +52,7 @@ export default function About() {
             </motion.div>
 
             <motion.div
-              className="space-y-6 text-black/70 text-lg leading-relaxed"
+              className="space-y-6 text-black/90 text-lg leading-relaxed"
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{
@@ -92,14 +92,14 @@ export default function About() {
                 ease: [0.25, 0.1, 0.25, 1],
               }}
             >
-              <span className="text-black/50 text-sm uppercase tracking-wider mb-4 block">
+              <span className="text-black/70 text-sm uppercase tracking-wider mb-4 block font-medium">
                 Technical Skills
               </span>
               <div className="flex flex-wrap gap-3">
                 {expertise.map((skill) => (
                   <span
                     key={skill}
-                    className="px-4 py-2 text-sm text-black/70 bg-white/40 backdrop-blur-sm rounded-full border border-black/10 hover:border-[#0077cc]/50 hover:text-black transition-all duration-300"
+                    className="px-4 py-2 text-sm text-black/90 bg-white/50 backdrop-blur-sm rounded-full border border-black/20 hover:border-[#0077cc]/50 hover:text-black transition-all duration-300"
                   >
                     {skill}
                   </span>
@@ -126,7 +126,7 @@ export default function About() {
                   <div className="text-2xl md:text-5xl text-[#0077cc] font-[family-name:var(--font-playfair)] mb-1 md:mb-2">
                     {item.value}
                   </div>
-                  <div className="text-black/50 text-xs md:text-sm uppercase tracking-wider">
+                  <div className="text-black/70 text-xs md:text-sm uppercase tracking-wider font-medium">
                     {item.label}
                   </div>
                 </motion.div>

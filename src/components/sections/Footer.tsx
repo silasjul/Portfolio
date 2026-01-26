@@ -36,7 +36,7 @@ export default function Footer() {
                 key={link.name}
                 href={link.href}
                 onClick={(e) => handleSmoothScroll(e, link.href)}
-                className="text-black/60 hover:text-black transition-colors duration-200 text-base"
+                className="text-black/70 hover:text-black transition-colors duration-200 text-base"
               >
                 {link.name}
               </a>
@@ -50,14 +50,14 @@ export default function Footer() {
                 key={link.name}
                 href={link.href}
                 target="_blank"
-                className="text-black/50 hover:text-black transition-colors duration-200 text-sm"
+                className="text-black/70 hover:text-black transition-colors duration-200 text-sm"
               >
                 {link.name}
               </motion.a>
             ))}
           </div>
           {/* Logo & Copyright */}
-          <p className="text-black/40 text-sm">
+          <p className="text-black/60 text-sm">
             © 2026 Silab. All rights reserved.
           </p>
         </div>
