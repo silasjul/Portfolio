@@ -8,7 +8,7 @@ import Footer from "@/components/sections/Footer";
 import { VantaParallaxBackground } from "@/components/VantaFog";
 import { getDictionary } from "@/lib/dictionaries";
 
-export default async function Home({ params }: { params: { lang: 'en' | 'da' } }) {
+export default async function Home({ params }: { params: Promise<{ lang: 'en' | 'da' }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
 
