@@ -1,7 +1,7 @@
 export const da = {
   nav: {
-    services: 'Ydelser',
-    works: 'Cases',
+    services: 'Kompetencer',
+    works: 'Projekter',
     about: 'Om os',
     getInTouch: 'Kontakt os',
   },
@@ -11,8 +11,8 @@ export const da = {
     line3: 'Komplette løsninger.',
   },
   services: {
-    label: 'Vores ekspertise',
-    title: 'Løsninger',
+    label: 'Vores løsninger',
+    title: 'Kompetencer',
     fullstack: {
       title: 'Fullstack-udvikling',
       description: 'Webapplikationer bygget med moderne frameworks — fra elegante frontends til robuste backends.',
