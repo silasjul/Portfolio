@@ -145,7 +145,6 @@ function NavLinks({
   useLayoutEffect(() => {
     if (activeSection && linkRefs.current[activeSection] && containerRef.current) {
       const link = linkRefs.current[activeSection]!;
-      const container = containerRef.current;
 
       setIndicatorStyle({
         left: link.offsetLeft,

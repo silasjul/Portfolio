@@ -1,15 +1,10 @@
 import React from "react";
 import { Metadata } from "next";
 import { ReactLenis } from "lenis/react";
-import { Playfair_Display, Spline_Sans } from "next/font/google";
+import { Spline_Sans } from "next/font/google";
 import "../globals.css";
 
 const spline = Spline_Sans({
-    subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-    variable: "--font-playfair",
     subsets: ["latin"],
 });
 

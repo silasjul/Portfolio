@@ -94,7 +94,7 @@ export default function About() {
                 Core Expertise
               </span>
               <div className="flex flex-wrap gap-3">
-                {expertise.map((skill, index) => (
+                {expertise.map((skill) => (
                   <span
                     key={skill}
                     className="px-4 py-2 text-sm text-black/70 bg-white/40 backdrop-blur-sm rounded-full border border-black/10 hover:border-[#0077cc]/50 hover:text-black transition-all duration-300"
