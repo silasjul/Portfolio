@@ -4,40 +4,52 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Code2, Brain, Rocket, Layers } from "lucide-react";
 
-const services = [
-  {
-    icon: Code2,
-    title: "Fullstack Development",
-    description:
-      "End-to-end web applications built with modern frameworks. From sleek frontends to robust backends, architected for scale.",
-    tags: ["React", "Next.js", "Node.js", "TypeScript"],
-  },
-  {
-    icon: Brain,
-    title: "AI Integration",
-    description:
-      "Leverage cutting-edge AI to automate workflows, enhance user experiences, and unlock intelligent insights from your data.",
-    tags: ["OpenAI", "LangChain", "RAG", "Agents"],
-  },
-  {
-    icon: Rocket,
-    title: "Performance & Growth",
-    description:
-      "Speed is revenue. We optimize for lightning-fast load times, SEO excellence, and conversion-focused architecture.",
-    tags: ["Core Web Vitals", "SEO", "Analytics"],
-  },
-  {
-    icon: Layers,
-    title: "System Architecture",
-    description:
-      "Scalable infrastructure that grows with your business. Clean code, clear documentation, future-proof foundations.",
-    tags: ["Google Cloud", "Docker", "CI/CD", "APIs"],
-  },
-];
+interface Service {
+  icon: typeof Code2;
+  title: string;
+  description: string;
+  tags: string[];
+}
 
-export default function Services() {
+type ServicesDict = {
+  label: string;
+  title: string;
+  fullstack: { title: string; description: string; tags: string };
+  ai: { title: string; description: string; tags: string };
+  performance: { title: string; description: string; tags: string };
+  architecture: { title: string; description: string; tags: string };
+}
+
+export default function Services({ dict }: { dict: ServicesDict }) {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
+
+  const services: Service[] = [
+    {
+      icon: Code2,
+      title: dict.fullstack.title,
+      description: dict.fullstack.description,
+      tags: dict.fullstack.tags.split(', '),
+    },
+    {
+      icon: Brain,
+      title: dict.ai.title,
+      description: dict.ai.description,
+      tags: dict.ai.tags.split(', '),
+    },
+    {
+      icon: Rocket,
+      title: dict.performance.title,
+      description: dict.performance.description,
+      tags: dict.performance.tags.split(', '),
+    },
+    {
+      icon: Layers,
+      title: dict.architecture.title,
+      description: dict.architecture.description,
+      tags: dict.architecture.tags.split(', '),
+    },
+  ];
 
   return (
     <section
@@ -54,11 +66,11 @@ export default function Services() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
-            What We Do
+          <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+            {dict.label}
           </span>
-          <h2 className="text-5xl md:text-7xl text-black mt-4 font-[family-name:var(--font-playfair)]">
-            Services
+          <h2 className="text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
+            {dict.title}
           </h2>
         </motion.div>
 
@@ -83,7 +95,7 @@ function ServiceCard({
   index,
   isInView,
 }: {
-  service: (typeof services)[0];
+  service: Service;
   index: number;
   isInView: boolean;
 }) {
@@ -101,7 +113,7 @@ function ServiceCard({
       }}
     >
       {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#0077cc]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-[#0077cc]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div className="relative z-10">
         {/* Icon */}
@@ -110,7 +122,7 @@ function ServiceCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-2xl md:text-3xl text-black mb-4 font-[family-name:var(--font-playfair)]">
+        <h3 className="text-2xl md:text-3xl text-black mb-4 font-(family-name:--font-playfair)">
           {service.title}
         </h3>
 
@@ -121,10 +133,10 @@ function ServiceCard({
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2">
-          {service.tags.map((tag) => (
+          {service.tags.map((tag: string) => (
             <span
               key={tag}
-              className="px-3 py-1 text-sm text-black/70 bg-black/[0.05] rounded-full border border-black/10"
+              className="px-3 py-1 text-sm text-black/70 bg-black/5 rounded-full border border-black/10"
             >
               {tag}
             </span>

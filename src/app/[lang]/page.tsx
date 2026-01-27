@@ -6,24 +6,28 @@ import About from "@/components/sections/About";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/sections/Footer";
 import { VantaParallaxBackground } from "@/components/VantaFog";
+import { getDictionary } from "@/lib/dictionaries";
 
-export default function Home() {
+export default async function Home({ params }: { params: { lang: 'en' | 'da' } }) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
+
   return (
     <main className="relative min-h-screen">
       <VantaParallaxBackground />
 
       {/* Hero Section */}
       <section className="relative h-screen">
-        <Navbar />
-        <Hero />
+        <Navbar dict={dict.nav} />
+        <Hero dict={dict.hero} />
       </section>
 
       <div className="relative">
-        <Services />
-        <Works />
-        <About />
-        <Contact />
-        <Footer />
+        <Services dict={dict.services} />
+        <Works dict={dict.works} />
+        <About dict={dict.about} />
+        <Contact dict={dict.contact} />
+        <Footer footerDict={dict.footer} navDict={dict.nav} />
       </div>
     </main>
   );

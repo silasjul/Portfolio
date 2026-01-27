@@ -69,7 +69,7 @@ export default function Works() {
             <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
               Portfolio
             </span>
-            <h2 className="text-5xl md:text-7xl text-black mt-4 font-[family-name:var(--font-playfair)]">
+            <h2 className="text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
               Selected Works
             </h2>
           </div>
@@ -137,7 +137,7 @@ function ProjectRow({
               0{index + 1}
             </span>
             <div>
-              <h3 className="text-2xl md:text-4xl text-black font-[family-name:var(--font-playfair)] group-hover:text-[#0077cc] transition-colors duration-300">
+              <h3 className="text-2xl md:text-4xl text-black font-(family-name:--font-playfair) group-hover:text-[#0077cc] transition-colors duration-300">
                 {project.title}
               </h3>
               <span className="text-black/40 text-sm mt-1 block">
@@ -151,7 +151,7 @@ function ProjectRow({
             {project.tech.map((tech) => (
               <span
                 key={tech}
-                className="px-3 py-1 text-sm text-black/50 bg-black/[0.03] rounded-full"
+                className="px-3 py-1 text-sm text-black/50 bg-black/3 rounded-full"
               >
                 {tech}
               </span>

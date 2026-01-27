@@ -3,27 +3,41 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
-const values = [
-  { value: "Fresh", label: "Perspectives" },
-  { value: "100%", label: "Dedication" },
-  { value: "Fair", label: "Pricing" },
-  { value: "Direct", label: "Communication" },
-];
+type AboutDict = {
+  label: string;
+  title: string;
+  titleItalic: string;
+  titleEnd: string;
+  paragraph1: string;
+  paragraph2: string;
+  paragraph3: string;
+  directComm: string;
+  competitiveRates: string;
+  paragraph3End: string;
+  skillsLabel: string;
+  skills: string;
+  value1: string;
+  value1Label: string;
+  value2: string;
+  value2Label: string;
+  value3: string;
+  value3Label: string;
+  value4: string;
+  value4Label: string;
+}
 
-const expertise = [
-  "React & Next.js",
-  "TypeScript",
-  "Node.js",
-  "Python",
-  "AI/ML Integration",
-  "Cloud Architecture",
-  "Database Design",
-  "API Development",
-];
-
-export default function About() {
+export default function About({ dict }: { dict: AboutDict }) {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
+
+  const values = [
+    { value: dict.value1, label: dict.value1Label },
+    { value: dict.value2, label: dict.value2Label },
+    { value: dict.value3, label: dict.value3Label },
+    { value: dict.value4, label: dict.value4Label },
+  ];
+
+  const expertise = dict.skills.split(', ');
 
   return (
     <section
@@ -41,13 +55,13 @@ export default function About() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
-                About Us
+              <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+                {dict.label}
               </span>
-              <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-[family-name:var(--font-playfair)]">
-                Ready to build
+              <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-(family-name:--font-playfair)">
+                {dict.title}
                 <br />
-                <span className="italic">your</span> vision.
+                <span className="italic">{dict.titleItalic}</span> {dict.titleEnd}
               </h2>
             </motion.div>
 
@@ -62,22 +76,15 @@ export default function About() {
               }}
             >
               <p>
-                We&apos;re a team of fullstack developers passionate about turning ideas into
-                polished digital products. We specialize in modern web technologies
-                and AI integration, always staying current with the latest tools
-                and best practices.
+                {dict.paragraph1}
               </p>
               <p>
-                We&apos;re currently building our freelance practice and looking for
-                projects where we can deliver real value. Whether it&apos;s a startup
-                MVP, a business website, or an AI-powered tool—we&apos;re ready to
-                invest the time and effort to make it exceptional.
+                {dict.paragraph2}
               </p>
               <p>
-                What you get working with us:{" "}
-                <span className="text-black font-medium">direct communication</span>,{" "}
-                <span className="text-black font-medium">competitive rates</span>, and
-                a team genuinely invested in your project&apos;s success.
+                {dict.paragraph3}{" "}
+                <span className="text-black font-medium">{dict.directComm}</span>,{" "}
+                <span className="text-black font-medium">{dict.competitiveRates}</span>, {dict.paragraph3End}
               </p>
             </motion.div>
 
@@ -93,7 +100,7 @@ export default function About() {
               }}
             >
               <span className="text-black/70 text-sm uppercase tracking-wider mb-4 block font-medium">
-                Technical Skills
+                {dict.skillsLabel}
               </span>
               <div className="flex flex-wrap gap-3">
                 {expertise.map((skill) => (
@@ -123,7 +130,7 @@ export default function About() {
                     ease: [0.25, 0.1, 0.25, 1],
                   }}
                 >
-                  <div className="text-2xl md:text-5xl text-[#0077cc] font-[family-name:var(--font-playfair)] mb-1 md:mb-2">
+                  <div className="text-2xl md:text-5xl text-[#0077cc] font-(family-name:--font-playfair) mb-1 md:mb-2">
                     {item.value}
                   </div>
                   <div className="text-black/70 text-xs md:text-sm uppercase tracking-wider font-medium">

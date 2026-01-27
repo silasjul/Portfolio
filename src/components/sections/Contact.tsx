@@ -5,7 +5,21 @@ import { useRef } from "react";
 import { ArrowRight, Mail, MapPin, Clock } from "lucide-react";
 import BookingWrapper from "../BookingWrapper";
 
-export default function Contact() {
+type ContactDict = {
+  label: string;
+  title: string;
+  titleLine2: string;
+  description: string;
+  cta: string;
+  emailLabel: string;
+  email: string;
+  locationLabel: string;
+  location: string;
+  responseLabel: string;
+  response: string;
+}
+
+export default function Contact({ dict }: { dict: ContactDict }) {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.3 });
 
@@ -23,18 +37,16 @@ export default function Contact() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
-              Let&apos;s Connect
+            <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+              {dict.label}
             </span>
-            <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-[family-name:var(--font-playfair)]">
-              Ready to start
+            <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-(family-name:--font-playfair)">
+              {dict.title}
               <br />
-              your project?
+              {dict.titleLine2}
             </h2>
             <p className="text-black/70 text-lg max-w-md mb-10 leading-relaxed">
-              We&apos;re always excited to discuss new opportunities and
-              challenges. Let&apos;s talk about how we can work together to
-              bring your vision to life.
+              {dict.description}
             </p>
 
             {/* Main CTA Button */}
@@ -45,7 +57,7 @@ export default function Contact() {
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.2 }}
               >
-                <span>Get In Touch</span>
+                <span>{dict.cta}</span>
                 <motion.div
                   className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-black/10 flex items-center justify-center transition-colors duration-300"
                   animate={{ x: [0, 5, 0] }}
@@ -72,23 +84,23 @@ export default function Contact() {
               {/* Contact Cards */}
               <ContactCard
                 icon={Mail}
-                label="Email"
-                value="contact@silab.dk"
+                label={dict.emailLabel}
+                value={dict.email}
                 href="mailto:contact@silab.dk"
                 delay={0.3}
                 isInView={isInView}
               />
               <ContactCard
                 icon={MapPin}
-                label="Location"
-                value="Available Worldwide"
+                label={dict.locationLabel}
+                value={dict.location}
                 delay={0.4}
                 isInView={isInView}
               />
               <ContactCard
                 icon={Clock}
-                label="Response Time"
-                value="Within 24 hours"
+                label={dict.responseLabel}
+                value={dict.response}
                 delay={0.5}
                 isInView={isInView}
               />

@@ -2,7 +2,13 @@
 
 import { motion } from "framer-motion";
 
-export default function Hero() {
+type HeroDict = {
+  line1: string;
+  line2: string;
+  line3: string;
+}
+
+export default function Hero({ dict }: { dict: HeroDict }) {
   return (
     <div className="relative h-full flex flex-col justify-center md:justify-end pb-8 md:pb-32 px-8">
       <div>
@@ -13,21 +19,21 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0, color: "#000000" }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
           >
-            Smarter
+            {dict.line1}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 30, color: "#35a9ff" }}
             animate={{ opacity: 1, y: 0, color: "#000000" }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.275 }}
           >
-            Fullstack & AI
+            {dict.line2}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 30, color: "#35a9ff" }}
             animate={{ opacity: 1, y: 0, color: "#000000" }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.35 }}
           >
-            Engineered for growth.
+            {dict.line3}
           </motion.div>
         </motion.h1>
 
@@ -38,21 +44,21 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0, color: "#000000" }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.2 }}
           >
-            Smarter
+            {dict.line1}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 30, color: "#35a9ff" }}
             animate={{ opacity: 1, y: 0, color: "#000000" }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.275 }}
           >
-            Fullstack & AI
+            {dict.line2}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 30, color: "#35a9ff" }}
             animate={{ opacity: 1, y: 0, color: "#000000" }}
             transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1], delay: 0.35 }}
           >
-            Engineered for growth.
+            {dict.line3}
           </motion.div>
         </motion.h1>
       </div>

@@ -44,7 +44,7 @@ export default function About() {
               <span className="text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium">
                 About Me
               </span>
-              <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-[family-name:var(--font-playfair)]">
+              <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-(family-name:--font-playfair)">
                 Building the
                 <br />
                 <span className="italic">future</span>, today.
@@ -121,7 +121,7 @@ export default function About() {
                     ease: [0.25, 0.1, 0.25, 1],
                   }}
                 >
-                  <div className="text-5xl md:text-6xl text-[#0077cc] font-[family-name:var(--font-playfair)] mb-2">
+                  <div className="text-5xl md:text-6xl text-[#0077cc] font-(family-name:--font-playfair) mb-2">
                     {stat.value}
                   </div>
                   <div className="text-black/50 text-sm uppercase tracking-wider">

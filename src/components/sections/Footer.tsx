@@ -2,20 +2,28 @@
 
 import { motion } from "framer-motion";
 import { useLenis } from 'lenis/react';
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const socialLinks = [
   { name: "LinkedIn", href: "https://www.linkedin.com/company/silab-studio/about" },
 ];
 
-export default function Footer() {
+type FooterDict = {
+  copyright: string;
+}
+
+type NavDict = {
+  services: string;
+  works: string;
+  about: string;
+}
+
+export default function Footer({ footerDict, navDict }: { footerDict: FooterDict, navDict: NavDict }) {
   const lenis = useLenis();
-  const { t } = useLanguage();
 
   const navLinks = [
-    { name: t('nav.works'), href: "#works" },
-    { name: t('nav.services'), href: "#services" },
-    { name: t('nav.about'), href: "#about" },
+    { name: navDict.works, href: "#works" },
+    { name: navDict.services, href: "#services" },
+    { name: navDict.about, href: "#about" },
   ];
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -60,7 +68,7 @@ export default function Footer() {
           </div>
           {/* Logo & Copyright */}
           <p className="text-black/60 text-sm">
-            {t('footer.copyright')}
+            {footerDict.copyright}
           </p>
         </div>
       </div>
