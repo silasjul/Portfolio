@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Code2, Brain, Rocket, Layers } from "lucide-react";
 
 interface Service {
@@ -100,49 +100,153 @@ function ServiceCard({
   isInView: boolean;
 }) {
   const Icon = service.icon;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [transform, setTransform] = useState({
+    rotateX: 0,
+    rotateY: 0,
+    scale: 1,
+  });
+  const [glarePosition, setGlarePosition] = useState({ x: 50, y: 50 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+
+    const card = cardRef.current;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    // Calculate rotation (reduced intensity for subtlety)
+    const rotateXValue = ((y - centerY) / centerY) * -4;
+    const rotateYValue = ((x - centerX) / centerX) * 4;
+
+    // Calculate glare position (percentage)
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+
+    setTransform({
+      rotateX: rotateXValue,
+      rotateY: rotateYValue,
+      scale: 1.02,
+    });
+    setGlarePosition({ x: glareX, y: glareY });
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTransform({ rotateX: 0, rotateY: 0, scale: 1 });
+    setGlarePosition({ x: 50, y: 50 });
+  };
+
+  // Dynamic shadow based on tilt - subtle layered glow effect
+  const shadowX = transform.rotateY * 1.5;
+  const shadowY = -transform.rotateX * 1.5;
+  const hoveredShadow = `${shadowX}px ${shadowY + 8}px 25px rgba(0, 119, 204, 0.08), ${shadowX * 1.5}px ${shadowY + 16}px 50px rgba(0, 119, 204, 0.06), 0 0 60px rgba(0, 119, 204, 0.03)`;
+  const defaultShadow = "0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05)";
 
   return (
-    <motion.div
-      className="group relative p-8 md:p-10 rounded-2xl bg-white/40 backdrop-blur-sm border border-black/10 hover:border-[#0077cc]/30 transition-colors duration-500"
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{
-        duration: 0.7,
-        delay: 0.15 * index,
-        ease: [0.25, 0.1, 0.25, 1],
-      }}
-    >
-      {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-[#0077cc]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    <div style={{ perspective: "1000px" }}>
+      <motion.div
+        ref={cardRef}
+        className={`group relative p-8 md:p-10 rounded-2xl backdrop-blur-sm overflow-hidden transition-colors duration-500 ${isHovered
+            ? "bg-white/75 border border-[#0077cc]/15"
+            : "bg-white/60 border border-black/10"
+          }`}
+        initial={{ opacity: 0, y: 50, boxShadow: defaultShadow }}
+        animate={
+          isInView
+            ? {
+              opacity: 1,
+              y: 0,
+              rotateX: transform.rotateX,
+              rotateY: transform.rotateY,
+              scale: transform.scale,
+              boxShadow: isHovered ? hoveredShadow : defaultShadow,
+            }
+            : {}
+        }
+        transition={{
+          duration: 0.7,
+          delay: 0.15 * index,
+          ease: [0.25, 0.1, 0.25, 1],
+          rotateX: { duration: 0.15, ease: "easeOut" },
+          rotateY: { duration: 0.15, ease: "easeOut" },
+          scale: { duration: 0.2, ease: "easeOut" },
+          boxShadow: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transformStyle: "preserve-3d",
+        }}
+      >
+        {/* Glare/shine effect */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 40%, transparent 70%)`,
+          }}
+        />
 
-      <div className="relative z-10">
-        {/* Icon */}
-        <div className="w-12 h-12 rounded-xl bg-[#0077cc]/10 flex items-center justify-center mb-6 group-hover:bg-[#0077cc]/20 transition-colors duration-300">
-          <Icon className="w-6 h-6 text-[#0077cc]" />
+        {/* Border glow effect */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-700"
+          style={{
+            background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(0, 119, 204, 0.05) 0%, transparent 50%)`,
+          }}
+        />
+
+        {/* Content with 3D lift */}
+        <div
+          className="relative z-10"
+          style={{
+            transform: isHovered ? "translateZ(30px)" : "translateZ(0px)",
+            transition: "transform 0.3s ease-out",
+          }}
+        >
+          {/* Icon */}
+          <div
+            className="w-12 h-12 rounded-xl bg-[#0077cc]/10 flex items-center justify-center mb-6 group-hover:bg-[#0077cc]/20 transition-all duration-300"
+            style={{
+              transform: isHovered ? "translateZ(20px)" : "translateZ(0px)",
+              transition: "transform 0.3s ease-out, background-color 0.3s",
+            }}
+          >
+            <Icon className="w-6 h-6 text-[#0077cc]" />
+          </div>
+
+          {/* Title */}
+          <h3 className="text-2xl md:text-3xl text-black mb-4 font-(family-name:--font-playfair)">
+            {service.title}
+          </h3>
+
+          {/* Description */}
+          <p className="text-black/80 text-lg leading-relaxed mb-6">
+            {service.description}
+          </p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2">
+            {service.tags.map((tag: string) => (
+              <span
+                key={tag}
+                className="px-3 py-1 text-sm text-black/70 bg-black/5 rounded-full border border-black/10"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
-
-        {/* Title */}
-        <h3 className="text-2xl md:text-3xl text-black mb-4 font-(family-name:--font-playfair)">
-          {service.title}
-        </h3>
-
-        {/* Description */}
-        <p className="text-black/80 text-lg leading-relaxed mb-6">
-          {service.description}
-        </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2">
-          {service.tags.map((tag: string) => (
-            <span
-              key={tag}
-              className="px-3 py-1 text-sm text-black/70 bg-black/5 rounded-full border border-black/10"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }

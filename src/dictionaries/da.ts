@@ -94,7 +94,7 @@ export const da = {
     emailLabel: 'E-mail',
     email: 'contact@silab.dk',
     locationLabel: 'Placering',
-    location: 'Arbejder globalt',
+    location: 'Danmark',
     responseLabel: 'Svartid',
     response: 'Inden for 24 timer',
   },
