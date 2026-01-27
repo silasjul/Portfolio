@@ -149,7 +149,7 @@ function ServiceCard({
   // Dynamic shadow based on tilt - subtle layered glow effect
   const shadowX = transform.rotateY * 1.5;
   const shadowY = -transform.rotateX * 1.5;
-  const hoveredShadow = `${shadowX}px ${shadowY + 8}px 25px rgba(0, 119, 204, 0.08), ${shadowX * 1.5}px ${shadowY + 16}px 50px rgba(0, 119, 204, 0.06), 0 0 60px rgba(0, 119, 204, 0.03)`;
+  const hoveredShadow = `${shadowX}px ${shadowY + 8}px 25px rgba(200, 50, 150, 0.06), ${shadowX * 1.5}px ${shadowY + 16}px 50px rgba(200, 50, 150, 0.04), 0 0 60px rgba(200, 50, 150, 0.02)`;
   const defaultShadow = "0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05)";
 
   return (
@@ -157,7 +157,7 @@ function ServiceCard({
       <motion.div
         ref={cardRef}
         className={`group relative p-8 md:p-10 rounded-2xl backdrop-blur-sm overflow-hidden transition-colors duration-500 ${isHovered
-            ? "bg-white/75 border border-[#0077cc]/15"
+            ? "bg-white/75 border border-[#c83296]/10"
             : "bg-white/60 border border-black/10"
           }`}
         initial={{ opacity: 0, y: 50, boxShadow: defaultShadow }}
@@ -201,7 +201,7 @@ function ServiceCard({
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-700"
           style={{
-            background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(0, 119, 204, 0.05) 0%, transparent 50%)`,
+            background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(200, 50, 150, 0.03) 0%, transparent 50%)`,
           }}
         />
 
