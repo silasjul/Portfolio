@@ -68,7 +68,7 @@ export const en = {
     title: 'Ready to build',
     titleItalic: 'your',
     titleEnd: 'vision.',
-    paragraph1: 'We\'re a team of fullstack developers passionate about turning ideas into helping you realize your ideas. We specialize in modern web technologies and AI integration, always staying current with the latest tools and best practices.',
+    paragraph1: 'We\'re a team of developers passionate about helping you realize your ideas. We specialize in modern web technologies and AI integration, always staying current with the latest tools and best practices.',
     paragraph2: 'We\'re currently building our freelance practice and looking for projects. Whether it\'s a startup MVP, a business website, or an AI-powered tool—we\'re ready to invest the time and effort to make it exceptional.',
     paragraph3: 'What you get working with us:',
     directComm: 'direct communication',
