@@ -2,19 +2,21 @@
 
 import { motion } from "framer-motion";
 import { useLenis } from 'lenis/react';
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const socialLinks = [
-  { name: "LinkedIn", href: "https://www.linkedin.com/company/silab-studio" },
-];
-
-const navLinks = [
-  { name: "Works", href: "#works" },
-  { name: "Services", href: "#services" },
-  { name: "About", href: "#about" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/company/silab-studio/about" },
 ];
 
 export default function Footer() {
   const lenis = useLenis();
+  const { t } = useLanguage();
+
+  const navLinks = [
+    { name: t('nav.works'), href: "#works" },
+    { name: t('nav.services'), href: "#services" },
+    { name: t('nav.about'), href: "#about" },
+  ];
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
@@ -58,7 +60,7 @@ export default function Footer() {
           </div>
           {/* Logo & Copyright */}
           <p className="text-black/60 text-sm">
-            © 2026 Silab. All rights reserved.
+            {t('footer.copyright')}
           </p>
         </div>
       </div>
