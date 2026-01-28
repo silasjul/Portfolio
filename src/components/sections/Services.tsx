@@ -152,15 +152,16 @@ function ServiceCard({
   const hoveredShadow = `${shadowX}px ${shadowY + 8}px 25px rgba(200, 50, 150, 0.06), ${shadowX * 1.5}px ${shadowY + 16}px 50px rgba(200, 50, 150, 0.04), 0 0 60px rgba(200, 50, 150, 0.02)`;
   const defaultShadow = "0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.05)";
 
+  // Glass card shadow
+  const glassBaseShadow = "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 12px 6px rgba(255, 255, 255, 0.15)";
+  const glassHoverShadow = `${hoveredShadow}, inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 16px 8px rgba(255, 255, 255, 0.2)`;
+
   return (
     <div style={{ perspective: "1000px" }}>
       <motion.div
         ref={cardRef}
-        className={`group relative p-8 md:p-10 rounded-2xl backdrop-blur-sm overflow-hidden transition-colors duration-500 ${isHovered
-            ? "bg-white/75 border border-[#c83296]/10"
-            : "bg-white/60 border border-black/10"
-          }`}
-        initial={{ opacity: 0, y: 50, boxShadow: defaultShadow }}
+        className="group relative p-8 md:p-10 rounded-[20px] overflow-hidden border border-white/30"
+        initial={{ opacity: 0, y: 50, boxShadow: glassBaseShadow }}
         animate={
           isInView
             ? {
@@ -169,7 +170,7 @@ function ServiceCard({
               rotateX: transform.rotateX,
               rotateY: transform.rotateY,
               scale: transform.scale,
-              boxShadow: isHovered ? hoveredShadow : defaultShadow,
+              boxShadow: isHovered ? glassHoverShadow : glassBaseShadow,
             }
             : {}
         }
@@ -187,21 +188,32 @@ function ServiceCard({
         onMouseLeave={handleMouseLeave}
         style={{
           transformStyle: "preserve-3d",
+          background: "rgba(255, 255, 255, 0.21)",
+          backdropFilter: "blur(17px)",
+          WebkitBackdropFilter: "blur(17px)",
         }}
       >
-        {/* Glare/shine effect */}
+        {/* Top edge highlight */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-60 transition-opacity duration-300"
+          className="pointer-events-none absolute top-0 left-0 right-0 h-[1px]"
           style={{
-            background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 40%, transparent 70%)`,
+            background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)",
           }}
         />
 
-        {/* Border glow effect */}
+        {/* Left edge highlight */}
         <div
-          className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-700"
+          className="pointer-events-none absolute top-0 left-0 w-[1px] h-full"
           style={{
-            background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(200, 50, 150, 0.03) 0%, transparent 50%)`,
+            background: "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))",
+          }}
+        />
+
+        {/* Glare/shine effect on hover */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-[20px] opacity-0 group-hover:opacity-60 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 40%, transparent 70%)`,
           }}
         />
 

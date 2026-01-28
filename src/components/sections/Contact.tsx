@@ -129,15 +129,35 @@ function ContactCard({
 }) {
   const content = (
     <motion.div
-      className="group flex items-center gap-6 p-6 rounded-2xl bg-white/40 backdrop-blur-sm border border-black/10 hover:border-[#0077cc]/30 transition-colors duration-300"
+      className="group flex items-center gap-6 p-6 rounded-[20px]  transition-colors duration-300 overflow-hidden relative"
       initial={{ opacity: 0, x: 30 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      style={{
+        background: "rgba(255, 255, 255, 0.21)",
+        backdropFilter: "blur(17px)",
+        WebkitBackdropFilter: "blur(17px)",
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 12px 6px rgba(255, 255, 255, 0.15)",
+      }}
     >
-      <div className="w-14 h-14 rounded-xl bg-[#0077cc]/10 flex items-center justify-center group-hover:bg-[#0077cc]/20 transition-colors duration-300">
+      {/* Top edge highlight */}
+      <div
+        className="pointer-events-none absolute top-0 left-0 right-0 h-[1px]"
+        style={{
+          background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)",
+        }}
+      />
+      {/* Left edge highlight */}
+      <div
+        className="pointer-events-none absolute top-0 left-0 w-[1px] h-full"
+        style={{
+          background: "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))",
+        }}
+      />
+      <div className="relative z-10 w-14 h-14 rounded-xl bg-[#0077cc]/10 flex items-center justify-center group-hover:bg-[#0077cc]/20 transition-colors duration-300">
         <Icon className="w-6 h-6 text-[#0077cc]" />
       </div>
-      <div>
+      <div className="relative z-10">
         <span className="text-black/60 text-sm uppercase tracking-wider block font-medium">
           {label}
         </span>

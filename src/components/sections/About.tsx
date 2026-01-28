@@ -121,7 +121,7 @@ export default function About({ dict }: { dict: AboutDict }) {
               {values.map((item, index) => (
                 <motion.div
                   key={item.label}
-                  className="relative p-4 md:p-8 rounded-2xl bg-white/40 backdrop-blur-sm border border-black/10"
+                  className="relative p-4 md:p-8 rounded-[20px] overflow-hidden"
                   initial={{ opacity: 0, y: 40 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{
@@ -129,11 +129,31 @@ export default function About({ dict }: { dict: AboutDict }) {
                     delay: 0.3 + index * 0.1,
                     ease: [0.25, 0.1, 0.25, 1],
                   }}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.21)",
+                    backdropFilter: "blur(17px)",
+                    WebkitBackdropFilter: "blur(17px)",
+                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 12px 6px rgba(255, 255, 255, 0.15)",
+                  }}
                 >
-                  <div className="text-2xl md:text-5xl text-[#0077cc] font-(family-name:--font-playfair) mb-1 md:mb-2">
+                  {/* Top edge highlight */}
+                  <div
+                    className="pointer-events-none absolute top-0 left-0 right-0 h-[1px]"
+                    style={{
+                      background: "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent)",
+                    }}
+                  />
+                  {/* Left edge highlight */}
+                  <div
+                    className="pointer-events-none absolute top-0 left-0 w-[1px] h-full"
+                    style={{
+                      background: "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))",
+                    }}
+                  />
+                  <div className="relative z-10 text-2xl md:text-5xl text-[#0077cc] font-(family-name:--font-playfair) mb-1 md:mb-2">
                     {item.value}
                   </div>
-                  <div className="text-black/70 text-xs md:text-sm uppercase tracking-wider font-medium">
+                  <div className="relative z-10 text-black/70 text-xs md:text-sm uppercase tracking-wider font-medium">
                     {item.label}
                   </div>
                 </motion.div>
