@@ -69,7 +69,7 @@ export const da = {
     titleItalic: 'din',
     titleEnd: 'vision.',
     paragraph1: 'Vi er et team af udviklere, der brænder for at omsætte idéer til digitale produkter. Vi specialiserer os i moderne webteknologi og AI-integration og holder os opdaterede på de nyeste værktøjer og \'best practices\'.',
-    paragraph2: 'Vi er i øjeblikket på udkig efter nye projekter. Uanset om det er en startup-MVP, en virksomhedshjemmeside eller et AI-drevet værktøj, investerer vi tiden og energien i at gøre det virkelig godt.',
+    paragraph2: 'Vi er altid på udkig efter nye projekter uanset om det er en startup-MVP, en virksomhedshjemmeside eller et AI-drevet værktøj, investerer vi tiden og energien i at gøre det virkelig godt.',
     paragraph3: 'Det får du, når du arbejder med os:',
     directComm: 'direkte kommunikation',
     competitiveRates: 'konkurrencedygtige priser',
