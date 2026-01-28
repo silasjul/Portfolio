@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { ReactLenis } from "lenis/react";
 import { Spline_Sans } from "next/font/google";
 import "../globals.css";
+import { PostHogProvider } from "../providers";
 
 const spline = Spline_Sans({
     subsets: ["latin"],
@@ -33,7 +34,9 @@ export default async function RootLayout({
         <html lang={lang}>
             <body className={`${spline.className} antialiased`}>
                 <ReactLenis root />
-                {children}
+                <PostHogProvider>
+                    {children}
+                </PostHogProvider>
             </body>
         </html>
     );
