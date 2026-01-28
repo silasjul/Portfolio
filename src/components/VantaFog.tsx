@@ -67,7 +67,7 @@ export function VantaParallaxBackground({ scrollspeed = 0.05 }: { scrollspeed?: 
   return (
     <div
       ref={containerRef}
-      className="fixed top-0 left-[-25vw] md:left-0 w-[600vw] md:w-full h-[400vh] md:h-[140vh] -z-10"
+      className="fixed top-0 left-[-25vw] md:left-0 w-[500vw] md:w-full h-[300vh] md:h-[140vh] -z-10"
       style={{
         filter: `hue-rotate(${hue}deg)`,
         transform: `translateY(-${parallaxOffset}px)`,
