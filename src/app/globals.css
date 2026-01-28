@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+    --breakpoint-3xl: 2500px;
     --font-family: var(--font-playfair);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -125,4 +126,33 @@
 
 html {
     overflow-x: hidden;
+}
+
+/* Mobile hero fluid typography - scales smoothly from 320px to 768px */
+.hero-title-mobile {
+    font-size: clamp(2.5rem, 10vw, 4rem);
+}
+
+/* Small mobile adjustments (320px-375px) */
+@media (max-width: 374px) {
+    .hero-title-mobile {
+        font-size: clamp(2.25rem, 9vw, 2.75rem);
+    }
+}
+
+/* Larger mobile (425px+) */
+@media (min-width: 425px) and (max-width: 767px) {
+    .hero-title-mobile {
+        font-size: clamp(3rem, 9vw, 4.25rem);
+    }
+}
+
+/* 1440p screen styles (2560px width, accounting for scrollbar) */
+@media (min-width: 2500px) {
+    .hero-title-3xl {
+        font-size: 12rem !important;
+    }
+    .hero-padding-3xl {
+        padding-bottom: 12.5rem !important;
+    }
 }

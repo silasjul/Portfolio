@@ -55,7 +55,7 @@ export default function Services({ dict }: { dict: ServicesDict }) {
     <section
       id="services"
       ref={containerRef}
-      className="relative min-h-screen py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
+      className="relative py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
     >
 
       <div className="relative z-10 max-w-7xl mx-auto">
