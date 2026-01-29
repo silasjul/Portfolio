@@ -2,10 +2,8 @@
 
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { createPortal } from "react-dom";
-import { Send, Sparkles, User, Bot, Loader2, Maximize2, Minimize2 } from "lucide-react";
+import { Send, Sparkles, User, Bot, Loader2 } from "lucide-react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
-import { useLenis } from "lenis/react";
 
 type AskAIDict = {
   label: string;
@@ -166,13 +164,6 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
   const [isStuckToBottom, setIsStuckToBottom] = useState(true);
   const [input, setInput] = useState("");
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Track if component is mounted (for portal)
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   // Use the AI SDK's useChat hook for streaming
   const { messages, sendMessage, status } = useChat();
@@ -180,27 +171,6 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   const isLoading = status === "streaming" || status === "submitted";
   // Only show typing indicator when waiting for response, not while streaming
   const isWaitingForResponse = status === "submitted";
-
-  // Get Lenis instance for scroll control
-  const lenis = useLenis();
-
-  // Lock body scroll and stop Lenis when expanded
-  useEffect(() => {
-    if (isExpanded) {
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-      lenis?.stop();
-    } else {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-      lenis?.start();
-    }
-    return () => {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-      lenis?.start();
-    };
-  }, [isExpanded, lenis]);
 
   const scrollToBottom = useCallback((instant = false) => {
     if (messagesContainerRef.current) {
@@ -274,140 +244,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
           </p>
         </motion.div>
 
-        {/* Expanded Modal - rendered via portal to escape stacking context */}
-        {isMounted && createPortal(
-          <AnimatePresence>
-            {isExpanded && (
-              <>
-                {/* Backdrop */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
-                  onClick={() => setIsExpanded(false)}
-                />
-                {/* Modal */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="fixed z-[9999] top-4 left-4 right-4 bottom-4 md:top-6 md:left-6 md:right-6 md:bottom-6 lg:top-8 lg:left-8 lg:right-8 lg:bottom-8 rounded-3xl overflow-hidden flex flex-col"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.95)",
-                    backdropFilter: "blur(20px)",
-                    WebkitBackdropFilter: "blur(20px)",
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  {/* Modal Header */}
-                  <div className="flex items-center justify-between p-4 md:p-6 border-b border-black/10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] flex items-center justify-center shadow-lg">
-                        <Bot className="w-5 h-5 text-white" />
-                      </div>
-                      <span className="font-medium text-black">{dict.aiName}</span>
-                    </div>
-                    <motion.button
-                      onClick={() => setIsExpanded(false)}
-                      className="w-10 h-10 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center text-black/60 hover:text-black transition-colors cursor-pointer"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Minimize2 className="w-5 h-5" />
-                    </motion.button>
-                  </div>
-
-                  {/* Modal Messages */}
-                  <div
-                    ref={messagesContainerRef}
-                    onScroll={handleScroll}
-                    className="flex-1 overflow-y-auto overscroll-contain p-6 md:p-8 space-y-6 chat-scrollbar"
-                  >
-                    <AnimatePresence initial={false}>
-                      <WelcomeMessage key="welcome" dict={dict} />
-                      {messages.map((message) => (
-                        <MessageBubble
-                          key={message.id}
-                          message={message}
-                          dict={dict}
-                          getMessageText={getMessageText}
-                        />
-                      ))}
-                    </AnimatePresence>
-
-                    <AnimatePresence>
-                      {isWaitingForResponse && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="flex items-start gap-4"
-                        >
-                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] flex items-center justify-center shrink-0 shadow-lg">
-                            <Bot className="w-5 h-5 text-white" />
-                          </div>
-                          <div className="flex items-center gap-2 px-5 py-4 rounded-2xl bg-black/5">
-                            <motion.div className="flex gap-1.5">
-                              {[0, 1, 2].map((i) => (
-                                <motion.div
-                                  key={i}
-                                  className="w-2 h-2 bg-[#0077cc] rounded-full"
-                                  animate={{ y: [0, -6, 0] }}
-                                  transition={{
-                                    duration: 0.6,
-                                    repeat: Infinity,
-                                    delay: i * 0.15,
-                                    ease: "easeInOut",
-                                  }}
-                                />
-                              ))}
-                            </motion.div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Modal Input */}
-                  <form onSubmit={handleSendMessage} className="p-4 md:p-6 border-t border-black/10">
-                    <div className="relative flex items-center gap-3">
-                      <div className="flex-1 relative">
-                        <input
-                          type="text"
-                          value={input}
-                          onChange={(e) => setInput(e.target.value)}
-                          onKeyPress={handleKeyPress}
-                          placeholder={dict.placeholder}
-                          className="w-full px-6 py-4 pr-14 rounded-full bg-black/5 border border-black/10 focus:border-[#0077cc]/50 focus:outline-none focus:ring-2 focus:ring-[#0077cc]/20 text-black placeholder:text-black/40 transition-all duration-300"
-                        />
-                      </div>
-                      <motion.button
-                        type="submit"
-                        disabled={!input.trim() || isLoading}
-                        className="w-14 h-14 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] disabled:from-black/20 disabled:to-black/30 flex items-center justify-center text-white shadow-lg disabled:shadow-none cursor-pointer disabled:cursor-not-allowed"
-                        whileHover={!input.trim() || isLoading ? {} : { scale: 1.05 }}
-                        whileTap={!input.trim() || isLoading ? {} : { scale: 0.95 }}
-                        transition={{ duration: 0.15 }}
-                      >
-                        {isLoading ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <Send className="w-5 h-5" />
-                        )}
-                      </motion.button>
-                    </div>
-                  </form>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>,
-          document.body
-        )}
-
-        {/* Chat Container (inline) */}
+        {/* Chat Container */}
         <motion.div
           className="relative rounded-3xl overflow-hidden"
           initial={{ opacity: 0, y: 50 }}
@@ -425,16 +262,6 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               "0 8px 32px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 16px 8px rgba(255, 255, 255, 0.2)",
           }}
         >
-          {/* Expand button */}
-          <motion.button
-            onClick={() => setIsExpanded(true)}
-            className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 flex items-center justify-center text-black/60 hover:text-black hover:bg-white/80 transition-colors cursor-pointer"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Maximize2 className="w-5 h-5" />
-          </motion.button>
-
           {/* Top edge highlight */}
           <div
             className="pointer-events-none absolute top-0 left-0 right-0 h-px"
@@ -454,8 +281,8 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
 
           {/* Messages Area */}
           <div
-            ref={isExpanded ? undefined : messagesContainerRef}
-            onScroll={isExpanded ? undefined : handleScroll}
+            ref={messagesContainerRef}
+            onScroll={handleScroll}
             onWheel={(e) => e.stopPropagation()}
             data-lenis-prevent
             className="h-100 md:h-[450px] overflow-y-auto overscroll-contain p-6 md:p-8 space-y-6 chat-scrollbar"
@@ -618,21 +445,13 @@ function WelcomeMessage({ dict }: { dict: AskAIDict }) {
         <Bot className="w-5 h-5 text-white" />
       </motion.div>
 
-      {/* Message Content */}
-      <div className="max-w-[80%]">
+      {/* Message Content - full width, no bubble (matches AI messages) */}
+      <div className="flex-1 min-w-0">
         <span className="text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5 block">
           {dict.aiName}
         </span>
-        <div
-          className="px-5 py-4 rounded-2xl bg-white/60 backdrop-blur-sm text-black/90 rounded-tl-sm border border-white/40"
-          style={{
-            boxShadow:
-              "0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6)",
-          }}
-        >
-          <p className="text-[15px] leading-relaxed whitespace-pre-wrap">
-            {dict.welcomeMessage}
-          </p>
+        <div className="text-black/90 text-[15px] leading-relaxed">
+          <p>{dict.welcomeMessage}</p>
         </div>
       </div>
     </motion.div>
