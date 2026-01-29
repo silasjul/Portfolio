@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { Send, Sparkles, User, Bot, Loader2 } from "lucide-react";
+import { useChat, type UIMessage } from "@ai-sdk/react";
 
 type AskAIDict = {
   label: string;
@@ -16,26 +17,160 @@ type AskAIDict = {
   welcomeMessage: string;
 };
 
-type Message = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-};
+// Helper to extract text content from a UIMessage
+function getMessageText(message: UIMessage): string {
+  return message.parts
+    .filter((part): part is { type: "text"; text: string } => part.type === "text")
+    .map((part) => part.text)
+    .join("");
+}
+
+// Markdown parser with proper newline and formatting support
+function parseMarkdown(text: string): React.ReactNode[] {
+  let key = 0;
+
+  // Process inline formatting within a line
+  const processInline = (str: string): React.ReactNode[] => {
+    const nodes: React.ReactNode[] = [];
+    let lastIndex = 0;
+
+    // Match: **bold**, `code` - we'll handle these with regex
+    // Bold must have ** on both sides, code must have ` on both sides
+    const regex = /(\*\*(.+?)\*\*|`([^`]+)`)/g;
+    let match;
+
+    while ((match = regex.exec(str)) !== null) {
+      // Add text before match
+      if (match.index > lastIndex) {
+        nodes.push(str.slice(lastIndex, match.index));
+      }
+
+      if (match[2]) {
+        // Bold **text**
+        nodes.push(<strong key={`b-${key++}`}>{match[2]}</strong>);
+      } else if (match[3]) {
+        // Inline code `text`
+        nodes.push(
+          <code key={`c-${key++}`} className="bg-black/10 px-1.5 py-0.5 rounded text-sm font-mono">
+            {match[3]}
+          </code>
+        );
+      }
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < str.length) {
+      nodes.push(str.slice(lastIndex));
+    }
+
+    return nodes.length > 0 ? nodes : [str];
+  };
+
+  // Process a single line and return appropriate element
+  const processLine = (line: string, idx: number): React.ReactNode => {
+    const trimmed = line.trim();
+
+    // Empty line
+    if (!trimmed) {
+      return <br key={`br-${key++}`} />;
+    }
+
+    // Heading: # ## ###
+    if (trimmed.startsWith('### ')) {
+      return <h4 key={`h4-${key++}`} className="font-semibold text-base mt-3 mb-1">{processInline(trimmed.slice(4))}</h4>;
+    }
+    if (trimmed.startsWith('## ')) {
+      return <h3 key={`h3-${key++}`} className="font-semibold text-lg mt-4 mb-1">{processInline(trimmed.slice(3))}</h3>;
+    }
+    if (trimmed.startsWith('# ')) {
+      return <h2 key={`h2-${key++}`} className="font-bold text-xl mt-4 mb-2">{processInline(trimmed.slice(2))}</h2>;
+    }
+
+    // Horizontal rule: --- or ***
+    if (/^(-{3,}|\*{3,})$/.test(trimmed)) {
+      return <hr key={`hr-${key++}`} className="my-4 border-black/20" />;
+    }
+
+    // Bullet point: * or - at start of line (not italic)
+    if (/^[\*\-]\s/.test(trimmed)) {
+      return (
+        <div key={`li-${key++}`} className="flex gap-2 ml-2">
+          <span className="text-black text-lg leading-none mt-0.5">•</span>
+          <span>{processInline(trimmed.slice(2))}</span>
+        </div>
+      );
+    }
+
+    // Numbered list: 1. 2. etc
+    const numberedMatch = trimmed.match(/^(\d+)\.\s(.+)/);
+    if (numberedMatch) {
+      return (
+        <div key={`ol-${key++}`} className="flex gap-2 ml-2">
+          <span className="text-[#0077cc] min-w-[1.5em]">{numberedMatch[1]}.</span>
+          <span>{processInline(numberedMatch[2])}</span>
+        </div>
+      );
+    }
+
+    // Regular paragraph
+    return <p key={`p-${key++}`} className="mb-1">{processInline(line)}</p>;
+  };
+
+  // First, extract and handle code blocks
+  const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
+  const segments: { type: 'text' | 'code'; content: string; language?: string }[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = codeBlockRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: 'text', content: text.slice(lastIndex, match.index) });
+    }
+    segments.push({ type: 'code', content: match[2].trim(), language: match[1] });
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    segments.push({ type: 'text', content: text.slice(lastIndex) });
+  }
+
+  // Process each segment
+  const result: React.ReactNode[] = [];
+
+  for (const segment of segments) {
+    if (segment.type === 'code') {
+      result.push(
+        <pre key={`code-${key++}`} className="bg-black/10 rounded-lg p-4 my-3 overflow-x-auto">
+          <code className="text-sm font-mono whitespace-pre">{segment.content}</code>
+        </pre>
+      );
+    } else {
+      // Split text into lines and process each
+      const lines = segment.content.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        result.push(processLine(lines[i], i));
+      }
+    }
+  }
+
+  return result;
+}
 
 export default function AskAI({ dict }: { dict: AskAIDict }) {
   const containerRef = useRef(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: dict.welcomeMessage,
-    },
-  ]);
-  const [inputValue, setInputValue] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
   const [isStuckToBottom, setIsStuckToBottom] = useState(true);
+  const [input, setInput] = useState("");
+
+  // Use the AI SDK's useChat hook for streaming
+  const { messages, sendMessage, status } = useChat();
+
+  const isLoading = status === "streaming" || status === "submitted";
+  // Only show typing indicator when waiting for response, not while streaming
+  const isWaitingForResponse = status === "submitted";
 
   const scrollToBottom = useCallback((instant = false) => {
     if (messagesContainerRef.current) {
@@ -55,49 +190,30 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
     }
   }, []);
 
-  // Auto-scroll when messages change or typing state changes, if stuck to bottom
+  // Auto-scroll when messages change or loading state changes, if stuck to bottom
   useEffect(() => {
     if (isStuckToBottom) {
       scrollToBottom(true);
     }
-  }, [messages, isTyping, isStuckToBottom, scrollToBottom]);
+  }, [messages, isLoading, isStuckToBottom, scrollToBottom]);
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: inputValue.trim(),
-    };
-
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
     // Force stick to bottom when user sends a message
     setIsStuckToBottom(true);
-    setMessages((prev) => [...prev, userMessage]);
-    setInputValue("");
-    setIsTyping(true);
-
-    // Simulate AI response - replace with actual API call
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content:
-          "Thank you for your question! This is a placeholder response. Connect this to your AI backend to provide real answers about your services and capabilities.",
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-      setIsTyping(false);
-    }, 1500);
+    sendMessage({ text: input });
+    setInput("");
   };
 
   const handleSuggestedQuestion = (question: string) => {
-    setInputValue(question);
+    setInput(question);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      handleSendMessage(e as unknown as React.FormEvent);
     }
   };
 
@@ -172,14 +288,23 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
             className="h-100 md:h-[450px] overflow-y-auto overscroll-contain p-6 md:p-8 space-y-6 chat-scrollbar"
           >
             <AnimatePresence initial={false}>
+              {/* Welcome message - always shown first */}
+              <WelcomeMessage key="welcome" dict={dict} />
+
+              {/* Chat messages from AI SDK */}
               {messages.map((message) => (
-                <MessageBubble key={message.id} message={message} dict={dict} />
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                  dict={dict}
+                  getMessageText={getMessageText}
+                />
               ))}
             </AnimatePresence>
 
-            {/* Typing Indicator */}
+            {/* Typing Indicator - only shown when waiting, not during streaming */}
             <AnimatePresence>
-              {isTyping && (
+              {isWaitingForResponse && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -219,7 +344,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
 
           {/* Suggested Questions */}
           <AnimatePresence>
-            {messages.length === 1 && (
+            {messages.length === 0 && (
               <motion.div
                 className="px-6 md:px-8 pb-4"
                 initial={{ opacity: 0, y: 10 }}
@@ -248,13 +373,13 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
           </AnimatePresence>
 
           {/* Input Area */}
-          <div className="p-4 md:p-6 border-t border-white/30">
+          <form onSubmit={handleSendMessage} className="p-4 md:p-6 border-t border-white/30">
             <div className="relative flex items-center gap-3">
               <div className="flex-1 relative">
                 <input
                   type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder={dict.placeholder}
                   className="w-full px-6 py-4 pr-14 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 focus:border-[#0077cc]/50 focus:outline-none focus:ring-2 focus:ring-[#0077cc]/20 text-black placeholder:text-black/40 transition-all duration-300"
@@ -265,21 +390,21 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
                 />
               </div>
               <motion.button
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isTyping}
+                type="submit"
+                disabled={!input.trim() || isLoading}
                 className="w-14 h-14 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] disabled:from-black/20 disabled:to-black/30 flex items-center justify-center text-white shadow-lg disabled:shadow-none cursor-pointer disabled:cursor-not-allowed"
-                whileHover={!inputValue.trim() || isTyping ? {} : { scale: 1.05 }}
-                whileTap={!inputValue.trim() || isTyping ? {} : { scale: 0.95 }}
+                whileHover={!input.trim() || isLoading ? {} : { scale: 1.05 }}
+                whileTap={!input.trim() || isLoading ? {} : { scale: 0.95 }}
                 transition={{ duration: 0.15 }}
               >
-                {isTyping ? (
+                {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
                   <Send className="w-5 h-5" />
                 )}
               </motion.button>
             </div>
-          </div>
+          </form>
         </motion.div>
 
         {/* Decorative elements */}
@@ -300,68 +425,124 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   );
 }
 
-function MessageBubble({
-  message,
-  dict,
-}: {
-  message: Message;
-  dict: AskAIDict;
-}) {
-  const isUser = message.role === "user";
-
+// Welcome message component (shown before any chat messages)
+function WelcomeMessage({ dict }: { dict: AskAIDict }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-      className={`flex items-start gap-4 ${isUser ? "flex-row-reverse" : ""}`}
+      className="flex items-start gap-4"
     >
       {/* Avatar */}
       <motion.div
-        className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg ${isUser
-          ? "bg-black/80"
-          : "bg-linear-to-br from-[#0077cc] to-[#003e7c]"
-          }`}
+        className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg bg-linear-to-br from-[#0077cc] to-[#003e7c]"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.3, delay: 0.1 }}
       >
-        {isUser ? (
-          <User className="w-5 h-5 text-white" />
-        ) : (
-          <Bot className="w-5 h-5 text-white" />
-        )}
+        <Bot className="w-5 h-5 text-white" />
       </motion.div>
 
       {/* Message Content */}
-      <div
-        className={`max-w-[80%] ${isUser ? "text-right" : ""}`}
-      >
-        {!isUser && (
-          <span className="text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5 block">
-            {dict.aiName}
-          </span>
-        )}
+      <div className="max-w-[80%]">
+        <span className="text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5 block">
+          {dict.aiName}
+        </span>
         <div
-          className={`px-5 py-4 rounded-2xl ${isUser
-            ? "bg-black/80 text-white rounded-tr-sm"
-            : "bg-white/60 backdrop-blur-sm text-black/90 rounded-tl-sm border border-white/40"
-            }`}
-          style={
-            !isUser
-              ? {
-                boxShadow:
-                  "0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6)",
-              }
-              : {
-                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)",
-              }
-          }
+          className="px-5 py-4 rounded-2xl bg-white/60 backdrop-blur-sm text-black/90 rounded-tl-sm border border-white/40"
+          style={{
+            boxShadow:
+              "0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6)",
+          }}
         >
           <p className="text-[15px] leading-relaxed whitespace-pre-wrap">
-            {message.content}
+            {dict.welcomeMessage}
           </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Message bubble for chat messages from AI SDK
+function MessageBubble({
+  message,
+  dict,
+  getMessageText,
+}: {
+  message: UIMessage;
+  dict: AskAIDict;
+  getMessageText: (message: UIMessage) => string;
+}) {
+  const isUser = message.role === "user";
+  const content = getMessageText(message);
+
+  // Memoize parsed markdown to avoid re-parsing on every render
+  const parsedContent = useMemo(() => parseMarkdown(content), [content]);
+
+  if (isUser) {
+    // User messages keep the bubble style
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+        className="flex items-start gap-4 flex-row-reverse"
+      >
+        {/* Avatar */}
+        <motion.div
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg bg-black/80"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <User className="w-5 h-5 text-white" />
+        </motion.div>
+
+        {/* Message Content */}
+        <div className="max-w-[80%] text-right">
+          <div
+            className="px-5 py-4 rounded-2xl bg-black/80 text-white rounded-tr-sm"
+            style={{ boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)" }}
+          >
+            <p className="text-[15px] leading-relaxed whitespace-pre-wrap">
+              {content}
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // AI messages - full width, no bubble
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      className="flex items-start gap-4"
+    >
+      {/* Avatar */}
+      <motion.div
+        className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg bg-linear-to-br from-[#0077cc] to-[#003e7c]"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
+        <Bot className="w-5 h-5 text-white" />
+      </motion.div>
+
+      {/* Message Content - full width, no bubble */}
+      <div className="flex-1 min-w-0">
+        <span className="text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5 block">
+          {dict.aiName}
+        </span>
+        <div className="text-black/90 text-[15px] leading-relaxed">
+          {parsedContent}
         </div>
       </div>
     </motion.div>
