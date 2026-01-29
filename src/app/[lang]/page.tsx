@@ -3,6 +3,7 @@ import Navbar from "@/components/hero/Navbar";
 import Services from "@/components/sections/Services";
 import Works from "@/components/sections/Works";
 import About from "@/components/sections/About";
+import AskAI from "@/components/sections/AskAI";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/sections/Footer";
 import { VantaParallaxBackground } from "@/components/VantaFog";
@@ -33,6 +34,9 @@ export default async function Home({ params }: { params: Promise<{ lang: 'en' | 
         </div>
         <div id="about">
           <About dict={dict.about} />
+        </div>
+        <div id="ask-ai">
+          <AskAI dict={dict.askAI} />
         </div>
         <div id="contact">
           <Contact dict={dict.contact} />
