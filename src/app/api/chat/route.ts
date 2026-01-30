@@ -1,13 +1,44 @@
+"use server";
+
 import { streamText, UIMessage, convertToModelMessages, tool } from "ai";
 import { google } from "@ai-sdk/google";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { z } from "zod";
 import { SYSTEM_PROMPT } from "@/lib/systemPrompt";
+import { jwtVerify } from "jose";
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  // --------------------------------- VERIFY CAPTCHA TOKEN ---------------------------------
+  const token = req.headers.get("X-Chat-Token");
 
+  if (!token) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized: Missing token" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  try {
+    // 3. Verify the token
+    // This throws an error if the token is fake, modified, or expired ( > 5 mins)
+    const secret = new TextEncoder().encode(process.env.CHAT_SECRET_KEY!);
+    await jwtVerify(token, secret);
+  } catch (err) {
+    console.error("Verification failed:", err);
+    return new Response(
+      JSON.stringify({ error: "Unauthorized: Invalid token" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // --------------------------------- RATE LIMITING ---------------------------------
   const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
 
   // 1. Burst Rate Limit: 5 requests per minute per IP
@@ -49,10 +80,16 @@ export async function POST(req: Request) {
   const globalResult = await globalLimit.limit("global");
 
   if (!globalResult.success) {
-    return new Response("Service momentarily unavailable due to high traffic.", {
-      status: 429,
-    });
+    return new Response(
+      "Service momentarily unavailable due to high traffic.",
+      {
+        status: 429,
+      },
+    );
   }
+
+  // --------------------------------- STREAM TEXT ---------------------------------
+  const { messages }: { messages: UIMessage[] } = await req.json();
 
   const result = streamText({
     model: google("gemini-2.5-flash-lite"),

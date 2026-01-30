@@ -5,6 +5,8 @@ import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { Send, Sparkles, Bot, Loader2 } from "lucide-react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import MessageBubble from "@/components/MessageBubble";
+import { Turnstile } from '@marsidev/react-turnstile';
+import { getChatToken } from '@/actions/getChatToken';
 
 export type AskAIDict = {
   label: string;
@@ -17,6 +19,7 @@ export type AskAIDict = {
   aiName: string;
   welcomeMessage: string;
   rateLimitMessage: string;
+  bookingButton: string;
 };
 
 export default function AskAI({ dict }: { dict: AskAIDict }) {
@@ -25,10 +28,17 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
   const [isStuckToBottom, setIsStuckToBottom] = useState(true);
   const [input, setInput] = useState("");
+  const [token, setToken] = useState<string | null>(null);
+  // Store token in a ref so sendMessage always has access to latest value
+  const tokenRef = useRef<string | null>(null);
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
 
   // Use the AI SDK's useChat hook for streaming
+  // Token is passed dynamically via sendMessage headers, not baked into transport
   const { messages, sendMessage, status, error } = useChat();
-  
+
   // Track rate limit errors with the message ID they apply to
   const [rateLimitForMessage, setRateLimitForMessage] = useState<Set<string>>(new Set());
   // Track previous error to detect when a NEW rate limit error occurs
@@ -38,11 +48,11 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   useEffect(() => {
     const errorMsg = error?.message?.toLowerCase() ?? "";
     const isRateLimitError = errorMsg.includes("rate limit") || errorMsg.includes("high traffic");
-    
+
     // Only process if this is a new error (error changed from undefined/different to rate limit)
     const errorChanged = error !== prevErrorRef.current;
     prevErrorRef.current = error;
-    
+
     if (isRateLimitError && errorChanged) {
       // Find the last user message that doesn't have an assistant response
       const userMessages = messages.filter(m => m.role === "user");
@@ -51,7 +61,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
         // Check if this user message already has a response
         const lastUserIndex = messages.findIndex(m => m.id === lastUserMsg.id);
         const nextMsg = messages[lastUserIndex + 1];
-        
+
         // Only add rate limit response if there's no assistant message after
         if (!nextMsg || nextMsg.role === "user") {
           setRateLimitForMessage(prev => {
@@ -68,13 +78,13 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   // Build the display messages list with rate limit responses inserted
   const allMessages = useMemo(() => {
     if (rateLimitForMessage.size === 0) return messages;
-    
+
     const result: UIMessage[] = [];
-    
+
     for (let i = 0; i < messages.length; i++) {
       const msg = messages[i];
       result.push(msg);
-      
+
       // After a user message, check if we need to add a rate limit response
       if (msg.role === "user" && rateLimitForMessage.has(msg.id)) {
         // Only add if there's no real assistant message following
@@ -95,7 +105,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
                 state: "result",
                 input: { shouldShow: true },
                 output: { shouldShow: true },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
               } as any,
             ],
             createdAt: new Date(),
@@ -103,12 +113,12 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
         }
       }
     }
-    
+
     return result;
   }, [messages, rateLimitForMessage, dict.rateLimitMessage]);
 
   const isLoading = status === "streaming" || status === "submitted";
-  
+
   // Show typing indicator only when submitted AND no streaming content yet
   // This prevents the indicator from appearing after streaming has started
   const hasStreamingContent = useMemo(() => {
@@ -118,7 +128,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
     // Check if assistant message has any text content
     return lastMsg.parts.some(p => p.type === "text" && p.text.length > 0);
   }, [messages]);
-  
+
   const isWaitingForResponse = status === "submitted" && !hasStreamingContent;
 
   const scrollToBottom = useCallback((instant = false) => {
@@ -148,10 +158,15 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !tokenRef.current) return;
     // Force stick to bottom when user sends a message
     setIsStuckToBottom(true);
-    sendMessage({ text: input });
+    // Pass token dynamically via headers option
+    sendMessage({ text: input }, {
+      headers: {
+        'X-Chat-Token': tokenRef.current,
+      },
+    });
     setInput("");
   };
 
@@ -172,6 +187,13 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
       ref={containerRef}
       className="relative py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden scroll-mt-32"
     >
+      {/* Captcha Logic - runs invisibly in background */}
+      {!token && (
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+          onSuccess={async (t) => setToken(await getChatToken(t))}
+        />
+      )}
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Section Header */}
         <motion.div
@@ -346,7 +368,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               </div>
               <motion.button
                 type="submit"
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || isLoading || !token}
                 className="w-14 h-14 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] disabled:from-black/20 disabled:to-black/30 flex items-center justify-center text-white shadow-lg disabled:shadow-none cursor-pointer disabled:cursor-not-allowed"
                 whileHover={!input.trim() || isLoading ? {} : { scale: 1.05 }}
                 whileTap={!input.trim() || isLoading ? {} : { scale: 0.95 }}

@@ -137,12 +137,12 @@ export default function MessageBubble({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, y: -5, height: 0 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="mt-4 overflow-hidden"
+                className="mt-4 overflow-hidden w-fit shadow-lg rounded-full"
               >
                 <BookingWrapper theme="light">
-                  <RainbowButton className="rounded-full p-5 cursor-pointer">
-                    Book a Discovery Call
-                  </RainbowButton>
+                <RainbowButton className="rounded-full p-5 cursor-pointer shadow-lg">
+                  {dict.bookingButton}
+                </RainbowButton>
                 </BookingWrapper>
               </motion.div>
             )}
