@@ -8,16 +8,50 @@ import { SYSTEM_PROMPT } from "@/lib/systemPrompt";
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
-  const ratelimit = new Ratelimit({
+  const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
+
+  // 1. Burst Rate Limit: 5 requests per minute per IP
+  const burstLimit = new Ratelimit({
     redis: Redis.fromEnv(),
-    limiter: Ratelimit.slidingWindow(2, "1 m"),
+    limiter: Ratelimit.slidingWindow(5, "1 m"),
     analytics: true,
+    prefix: "@upstash/ratelimit/burst",
   });
 
-  const { success } = await ratelimit.limit("ip adress");
+  // 2. Daily Rate Limit: 50 requests per day per IP
+  const dailyLimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(50, "1 d"),
+    analytics: true,
+    prefix: "@upstash/ratelimit/daily",
+  });
 
-  if (!success) {
-    return new Response("Rate limit exceeded", { status: 429 });
+  // 3. Global Safety Limit: 1000 requests per day (protects wallet)
+  const globalLimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(1000, "1 d"),
+    analytics: true,
+    prefix: "@upstash/ratelimit/global",
+  });
+
+  const [burstResult, dailyResult] = await Promise.all([
+    burstLimit.limit(ip),
+    dailyLimit.limit(ip),
+  ]);
+
+  if (!burstResult.success || !dailyResult.success) {
+    return new Response("Rate limit exceeded. Please try again later.", {
+      status: 429,
+    });
+  }
+
+  // Only check global limit if IP limits pass to avoid DOSing the global counter
+  const globalResult = await globalLimit.limit("global");
+
+  if (!globalResult.success) {
+    return new Response("Service momentarily unavailable due to high traffic.", {
+      status: 429,
+    });
   }
 
   const result = streamText({

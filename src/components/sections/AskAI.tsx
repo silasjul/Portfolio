@@ -28,22 +28,61 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
 
   // Use the AI SDK's useChat hook for streaming
   const { messages, sendMessage, status, error } = useChat();
-  const [rateLimitResponses, setRateLimitResponses] = useState<UIMessage[]>([]);
+  
+  // Track rate limit errors with the message ID they apply to
+  const [rateLimitForMessage, setRateLimitForMessage] = useState<Set<string>>(new Set());
+  // Track previous error to detect when a NEW rate limit error occurs
+  const prevErrorRef = useRef<Error | undefined>(undefined);
 
-  // Check for rate limit error and add a response for each user message
+  // Handle rate limit errors - only add response when error first appears
   useEffect(() => {
-    if (error?.message?.toLowerCase().includes("rate limit")) {
-      // Find user messages that don't have a corresponding rate limit response
+    const errorMsg = error?.message?.toLowerCase() ?? "";
+    const isRateLimitError = errorMsg.includes("rate limit") || errorMsg.includes("high traffic");
+    
+    // Only process if this is a new error (error changed from undefined/different to rate limit)
+    const errorChanged = error !== prevErrorRef.current;
+    prevErrorRef.current = error;
+    
+    if (isRateLimitError && errorChanged) {
+      // Find the last user message that doesn't have an assistant response
       const userMessages = messages.filter(m => m.role === "user");
-      const responseCount = rateLimitResponses.length;
+      if (userMessages.length > 0) {
+        const lastUserMsg = userMessages[userMessages.length - 1];
+        // Check if this user message already has a response
+        const lastUserIndex = messages.findIndex(m => m.id === lastUserMsg.id);
+        const nextMsg = messages[lastUserIndex + 1];
+        
+        // Only add rate limit response if there's no assistant message after
+        if (!nextMsg || nextMsg.role === "user") {
+          setRateLimitForMessage(prev => {
+            if (prev.has(lastUserMsg.id)) return prev;
+            const next = new Set(prev);
+            next.add(lastUserMsg.id);
+            return next;
+          });
+        }
+      }
+    }
+  }, [error, messages]);
+
+  // Build the display messages list with rate limit responses inserted
+  const allMessages = useMemo(() => {
+    if (rateLimitForMessage.size === 0) return messages;
+    
+    const result: UIMessage[] = [];
+    
+    for (let i = 0; i < messages.length; i++) {
+      const msg = messages[i];
+      result.push(msg);
       
-      // If there are more user messages than responses, add new responses
-      if (userMessages.length > responseCount) {
-        const newResponses: UIMessage[] = [];
-        for (let i = responseCount; i < userMessages.length; i++) {
-          const toolCallId = `cta-${Date.now()}-${i}`;
-          newResponses.push({
-            id: `rate-limit-${Date.now()}-${i}`,
+      // After a user message, check if we need to add a rate limit response
+      if (msg.role === "user" && rateLimitForMessage.has(msg.id)) {
+        // Only add if there's no real assistant message following
+        const nextMsg = messages[i + 1];
+        if (!nextMsg || nextMsg.role === "user") {
+          const toolCallId = `cta-${msg.id}`;
+          result.push({
+            id: `rate-limit-${msg.id}`,
             role: "assistant",
             parts: [
               {
@@ -62,38 +101,25 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
             createdAt: new Date(),
           } as UIMessage);
         }
-        setRateLimitResponses(prev => [...prev, ...newResponses]);
-      }
-    }
-  }, [error, messages, rateLimitResponses.length, dict.rateLimitMessage]);
-
-  // Combine real messages with rate limit responses (interleaved correctly)
-  const allMessages = useMemo(() => {
-    if (rateLimitResponses.length === 0) return messages;
-    
-    const result: UIMessage[] = [];
-    let rateLimitIndex = 0;
-    
-    for (const msg of messages) {
-      result.push(msg);
-      // After each user message, check if we need to add a rate limit response
-      if (msg.role === "user" && rateLimitIndex < rateLimitResponses.length) {
-        // Only add rate limit response if there's no assistant message following this user message
-        const msgIndex = messages.indexOf(msg);
-        const nextMsg = messages[msgIndex + 1];
-        if (!nextMsg || nextMsg.role === "user") {
-          result.push(rateLimitResponses[rateLimitIndex]);
-          rateLimitIndex++;
-        }
       }
     }
     
     return result;
-  }, [messages, rateLimitResponses]);
+  }, [messages, rateLimitForMessage, dict.rateLimitMessage]);
 
   const isLoading = status === "streaming" || status === "submitted";
-  // Only show typing indicator when waiting for response, not while streaming
-  const isWaitingForResponse = status === "submitted";
+  
+  // Show typing indicator only when submitted AND no streaming content yet
+  // This prevents the indicator from appearing after streaming has started
+  const hasStreamingContent = useMemo(() => {
+    if (messages.length === 0) return false;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg.role !== "assistant") return false;
+    // Check if assistant message has any text content
+    return lastMsg.parts.some(p => p.type === "text" && p.text.length > 0);
+  }, [messages]);
+  
+  const isWaitingForResponse = status === "submitted" && !hasStreamingContent;
 
   const scrollToBottom = useCallback((instant = false) => {
     if (messagesContainerRef.current) {
@@ -118,7 +144,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
     if (isStuckToBottom) {
       scrollToBottom(true);
     }
-  }, [messages, isLoading, isStuckToBottom, scrollToBottom]);
+  }, [allMessages, isLoading, isStuckToBottom, scrollToBottom]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,76 +237,75 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               data-lenis-prevent
               className="h-100 md:h-[450px] overflow-y-auto overscroll-contain p-6 md:p-8 space-y-6 chat-scrollbar"
             >
-            <AnimatePresence initial={false}>
               {/* Welcome message - always shown first */}
-              <WelcomeMessage key="welcome" dict={dict} />
+              <WelcomeMessage dict={dict} />
 
               {/* Chat messages from AI SDK */}
-              {allMessages.map((message, index) => {
-                // Check if this is the last assistant message and we're still streaming
-                const isLastMessage = index === allMessages.length - 1;
-                const isMessageStreaming = isLastMessage && message.role === "assistant" && status === "streaming";
+              <AnimatePresence mode="popLayout" initial={false}>
+                {allMessages.map((message, index) => {
+                  // Check if this is the last assistant message and we're still streaming
+                  const isLastMessage = index === allMessages.length - 1;
+                  const isMessageStreaming = isLastMessage && message.role === "assistant" && status === "streaming";
 
-                return (
-                  <MessageBubble
-                    key={message.id}
-                    message={message}
-                    dict={dict}
-                    isStreaming={isMessageStreaming}
-                  />
-                );
-              })}
-            </AnimatePresence>
+                  return (
+                    <MessageBubble
+                      key={message.id}
+                      message={message}
+                      dict={dict}
+                      isStreaming={isMessageStreaming}
+                    />
+                  );
+                })}
+              </AnimatePresence>
 
-            {/* Typing Indicator - only shown when waiting, not during streaming */}
-            <AnimatePresence>
-              {isWaitingForResponse && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex items-start gap-4"
-                >
-                  <div className="w-10 h-10 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] flex items-center justify-center shrink-0 shadow-lg">
-                    <Bot className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex items-center gap-2 px-5 py-4 rounded-2xl bg-white/60 backdrop-blur-sm">
-                    <motion.div
-                      className="flex gap-1.5"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      {[0, 1, 2].map((i) => (
-                        <motion.div
-                          key={i}
-                          className="w-2 h-2 bg-[#0077cc] rounded-full"
-                          animate={{
-                            y: [0, -6, 0],
-                          }}
-                          transition={{
-                            duration: 0.6,
-                            repeat: Infinity,
-                            delay: i * 0.15,
-                            ease: "easeInOut",
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+              {/* Typing Indicator - only shown when waiting, not during streaming */}
+              <AnimatePresence mode="wait">
+                {isWaitingForResponse && (
+                  <motion.div
+                    key="typing-indicator"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10, transition: { duration: 0.15 } }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-start gap-4"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] flex items-center justify-center shrink-0 shadow-lg">
+                      <Bot className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex items-center gap-2 px-5 py-4 rounded-2xl bg-white/60 backdrop-blur-sm">
+                      <div className="flex gap-1.5">
+                        {[0, 1, 2].map((i) => (
+                          <motion.div
+                            key={i}
+                            className="w-2 h-2 bg-[#0077cc] rounded-full"
+                            animate={{
+                              y: [0, -6, 0],
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Infinity,
+                              delay: i * 0.15,
+                              ease: "easeInOut",
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
             </div>
 
             {/* Suggested Questions - overlaid at bottom of messages area */}
-            <AnimatePresence>
-              {messages.length === 0 && (
+            <AnimatePresence mode="wait">
+              {allMessages.length === 0 && (
                 <motion.div
+                  key="suggested-questions"
                   className="absolute bottom-0 left-0 right-0 pb-4 px-8"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                  exit={{ opacity: 0, transition: { duration: 0.15 } }}
                   transition={{ duration: 0.3 }}
                 >
                   <div className="flex flex-wrap gap-2">

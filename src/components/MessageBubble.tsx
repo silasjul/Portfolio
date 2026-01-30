@@ -1,8 +1,8 @@
 import { UIMessage } from "ai";
-import { motion } from "framer-motion";
-import { User, Bot, Calendar } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { User, Bot } from "lucide-react";
 import MarkdownParser from "@/components/MarkdownParser";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { AskAIDict } from "@/components/sections/AskAI";
 import BookingWrapper from "@/components/BookingWrapper";
 import { RainbowButton } from "./ui/rainbow-button";
@@ -41,8 +41,25 @@ export default function MessageBubble({
   const isUser = message.role === "user";
   const content = getMessageText(message);
   
-  // Only show CTA when streaming is done and tool was called
-  const showCTA = !isStreaming && shouldShowCTA(message);
+  // Check if CTA should be shown based on tool call
+  const ctaRequested = shouldShowCTA(message);
+  
+  // Delay CTA appearance to ensure smooth transition after streaming ends
+  const [ctaVisible, setCtaVisible] = useState(false);
+  
+  useEffect(() => {
+    // Only show CTA when:
+    // 1. Tool requested it
+    // 2. Not currently streaming
+    // 3. Message has actual content (prevents flash during initial render)
+    if (ctaRequested && !isStreaming && content.length > 0) {
+      // Small delay to let the content settle before showing CTA
+      const timer = setTimeout(() => setCtaVisible(true), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setCtaVisible(false);
+    }
+  }, [ctaRequested, isStreaming, content.length]);
 
   // Memoize parsed markdown to avoid re-parsing on every render
   const parsedContent = useMemo(() => MarkdownParser(content), [content]);
@@ -112,20 +129,24 @@ export default function MessageBubble({
           </div>
           
           {/* Booking CTA Button */}
-          {showCTA && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              className="mt-4"
-            >
-              <BookingWrapper theme="light">
-                <RainbowButton className="rounded-full p-5 cursor-pointer">
-                  Book a Discovery Call
-                </RainbowButton>
-              </BookingWrapper>
-            </motion.div>
-          )}
+          <AnimatePresence mode="wait">
+            {ctaVisible && (
+              <motion.div
+                key="cta-button"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -5, height: 0 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="mt-4 overflow-hidden"
+              >
+                <BookingWrapper theme="light">
+                  <RainbowButton className="rounded-full p-5 cursor-pointer">
+                    Book a Discovery Call
+                  </RainbowButton>
+                </BookingWrapper>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
     </>
