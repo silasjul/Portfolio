@@ -147,30 +147,27 @@ When the conversation indicates the user is interested in working with us or has
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
-  const displayCTATool = tool({
-    description:
-      "Show a CTA to the user to book a meeting. Tool name is displayCTA.",
-    inputSchema: z.object({
-      shouldShow: z
-        .boolean()
-        .describe("Set to true to show a CTA to the user to book a meeting."),
-    }),
-    execute: async ({ shouldShow }) => {
-      return {
-        shouldShow,
-      };
-    },
-  });
-
   const result = streamText({
     model: google("gemini-2.5-flash-lite"),
     system: SYSTEM_PROMPT,
     messages: await convertToModelMessages(messages),
     tools: {
-      // Canonical tool name (preferred)
-      displayCTA: displayCTATool,
-      // Alias for models that auto-snake-case tool names
-      display_cta: displayCTATool,
+      display_cta: tool({
+        description:
+          "Show a CTA to the user to book a meeting. Tool name is displayCTA.",
+        inputSchema: z.object({
+          shouldShow: z
+            .boolean()
+            .describe(
+              "Set to true to show a CTA to the user to book a meeting.",
+            ),
+        }),
+        execute: async ({ shouldShow }) => {
+          return {
+            shouldShow,
+          };
+        },
+      }),
     },
   });
 

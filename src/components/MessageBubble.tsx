@@ -1,9 +1,10 @@
 import { UIMessage } from "ai";
 import { motion } from "framer-motion";
-import { User, Bot } from "lucide-react";
+import { User, Bot, Calendar } from "lucide-react";
 import MarkdownParser from "@/components/MarkdownParser";
 import { useMemo } from "react";
 import type { AskAIDict } from "@/components/sections/AskAI";
+import BookingWrapper from "@/components/BookingWrapper";
 
 // Helper to extract text content from a UIMessage
 function getMessageText(message: UIMessage): string {
@@ -13,16 +14,36 @@ function getMessageText(message: UIMessage): string {
     .join("");
 }
 
+// Check if the display_cta tool was called with shouldShow: true
+function shouldShowCTA(message: UIMessage): boolean {
+  if (message.role !== "assistant") return false;
+  
+  return message.parts.some((part) => {
+    // Tool invocations have type like "tool-display_cta"
+    if (part.type === "tool-display_cta" && "output" in part && part.output) {
+      const output = part.output as { shouldShow?: boolean };
+      return output.shouldShow === true;
+    }
+    return false;
+  });
+}
+
 export default function MessageBubble({
   message,
   dict,
+  isStreaming = false,
 }: {
   message: UIMessage;
   dict: AskAIDict;
+  isStreaming?: boolean;
 }) {
   const isUser = message.role === "user";
-  console.log(message)
   const content = getMessageText(message);
+  
+
+  console.log(message)
+  // Only show CTA when streaming is done and tool was called
+  const showCTA = !isStreaming && shouldShowCTA(message);
 
   // Memoize parsed markdown to avoid re-parsing on every render
   const parsedContent = useMemo(() => MarkdownParser(content), [content]);
@@ -90,6 +111,28 @@ export default function MessageBubble({
           <div className="text-black/90 text-[15px] leading-relaxed">
             {parsedContent}
           </div>
+          
+          {/* Booking CTA Button */}
+          {showCTA && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="mt-4"
+            >
+              <BookingWrapper theme="light">
+                <motion.button
+                  className="inline-flex items-center gap-2 px-5 py-3 bg-black text-white font-medium rounded-full shadow-lg cursor-pointer"
+                  whileHover={{ scale: 1.02, boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)" }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Calendar className="w-4 h-4" />
+                  Book a Discovery Call
+                </motion.button>
+              </BookingWrapper>
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </>

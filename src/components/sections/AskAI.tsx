@@ -152,13 +152,20 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               <WelcomeMessage key="welcome" dict={dict} />
 
               {/* Chat messages from AI SDK */}
-              {messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                  dict={dict}
-                />
-              ))}
+              {messages.map((message, index) => {
+                // Check if this is the last assistant message and we're still streaming
+                const isLastMessage = index === messages.length - 1;
+                const isMessageStreaming = isLastMessage && message.role === "assistant" && status === "streaming";
+                
+                return (
+                  <MessageBubble
+                    key={message.id}
+                    message={message}
+                    dict={dict}
+                    isStreaming={isMessageStreaming}
+                  />
+                );
+              })}
             </AnimatePresence>
 
             {/* Typing Indicator - only shown when waiting, not during streaming */}
