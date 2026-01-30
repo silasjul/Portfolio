@@ -1,11 +1,12 @@
 "use client";
 
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { Send, Sparkles, User, Bot, Loader2 } from "lucide-react";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { Send, Sparkles, Bot, Loader2 } from "lucide-react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
+import MessageBubble from "@/components/MessageBubble";
 
-type AskAIDict = {
+export type AskAIDict = {
   label: string;
   title: string;
   titleHighlight: string;
@@ -16,147 +17,6 @@ type AskAIDict = {
   aiName: string;
   welcomeMessage: string;
 };
-
-// Helper to extract text content from a UIMessage
-function getMessageText(message: UIMessage): string {
-  return message.parts
-    .filter((part): part is { type: "text"; text: string } => part.type === "text")
-    .map((part) => part.text)
-    .join("");
-}
-
-// Markdown parser with proper newline and formatting support
-function parseMarkdown(text: string): React.ReactNode[] {
-  let key = 0;
-
-  // Process inline formatting within a line
-  const processInline = (str: string): React.ReactNode[] => {
-    const nodes: React.ReactNode[] = [];
-    let lastIndex = 0;
-
-    // Match: **bold**, `code` - we'll handle these with regex
-    // Bold must have ** on both sides, code must have ` on both sides
-    const regex = /(\*\*(.+?)\*\*|`([^`]+)`)/g;
-    let match;
-
-    while ((match = regex.exec(str)) !== null) {
-      // Add text before match
-      if (match.index > lastIndex) {
-        nodes.push(str.slice(lastIndex, match.index));
-      }
-
-      if (match[2]) {
-        // Bold **text**
-        nodes.push(<strong key={`b-${key++}`}>{match[2]}</strong>);
-      } else if (match[3]) {
-        // Inline code `text`
-        nodes.push(
-          <code key={`c-${key++}`} className="bg-black/10 px-1.5 py-0.5 rounded text-sm font-mono">
-            {match[3]}
-          </code>
-        );
-      }
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    // Add remaining text
-    if (lastIndex < str.length) {
-      nodes.push(str.slice(lastIndex));
-    }
-
-    return nodes.length > 0 ? nodes : [str];
-  };
-
-  // Process a single line and return appropriate element
-  const processLine = (line: string, idx: number): React.ReactNode => {
-    const trimmed = line.trim();
-
-    // Empty line
-    if (!trimmed) {
-      return <br key={`br-${key++}`} />;
-    }
-
-    // Heading: # ## ###
-    if (trimmed.startsWith('### ')) {
-      return <h4 key={`h4-${key++}`} className="font-semibold text-base mt-3 mb-1">{processInline(trimmed.slice(4))}</h4>;
-    }
-    if (trimmed.startsWith('## ')) {
-      return <h3 key={`h3-${key++}`} className="font-semibold text-lg mt-4 mb-1">{processInline(trimmed.slice(3))}</h3>;
-    }
-    if (trimmed.startsWith('# ')) {
-      return <h2 key={`h2-${key++}`} className="font-bold text-xl mt-4 mb-2">{processInline(trimmed.slice(2))}</h2>;
-    }
-
-    // Horizontal rule: --- or ***
-    if (/^(-{3,}|\*{3,})$/.test(trimmed)) {
-      return <hr key={`hr-${key++}`} className="my-4 border-black/20" />;
-    }
-
-    // Bullet point: * or - at start of line (not italic)
-    if (/^[\*\-]\s/.test(trimmed)) {
-      return (
-        <div key={`li-${key++}`} className="flex gap-2 ml-2">
-          <span className="text-black text-lg leading-none mt-0.5">•</span>
-          <span>{processInline(trimmed.slice(2))}</span>
-        </div>
-      );
-    }
-
-    // Numbered list: 1. 2. etc
-    const numberedMatch = trimmed.match(/^(\d+)\.\s(.+)/);
-    if (numberedMatch) {
-      return (
-        <div key={`ol-${key++}`} className="flex gap-2 ml-2">
-          <span className="text-[#0077cc] min-w-[1.5em]">{numberedMatch[1]}.</span>
-          <span>{processInline(numberedMatch[2])}</span>
-        </div>
-      );
-    }
-
-    // Regular paragraph
-    return <p key={`p-${key++}`} className="mb-1">{processInline(line)}</p>;
-  };
-
-  // First, extract and handle code blocks
-  const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
-  const segments: { type: 'text' | 'code'; content: string; language?: string }[] = [];
-  let lastIndex = 0;
-  let match;
-
-  while ((match = codeBlockRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      segments.push({ type: 'text', content: text.slice(lastIndex, match.index) });
-    }
-    segments.push({ type: 'code', content: match[2].trim(), language: match[1] });
-    lastIndex = match.index + match[0].length;
-  }
-
-  if (lastIndex < text.length) {
-    segments.push({ type: 'text', content: text.slice(lastIndex) });
-  }
-
-  // Process each segment
-  const result: React.ReactNode[] = [];
-
-  for (const segment of segments) {
-    if (segment.type === 'code') {
-      result.push(
-        <pre key={`code-${key++}`} className="bg-black/10 rounded-lg p-4 my-3 overflow-x-auto">
-          <code className="text-sm font-mono whitespace-pre">{segment.content}</code>
-        </pre>
-      );
-    } else {
-      // Split text into lines and process each
-      const lines = segment.content.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        result.push(processLine(lines[i], i));
-      }
-    }
-  }
-
-  return result;
-}
 
 export default function AskAI({ dict }: { dict: AskAIDict }) {
   const containerRef = useRef(null);
@@ -297,7 +157,6 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
                   key={message.id}
                   message={message}
                   dict={dict}
-                  getMessageText={getMessageText}
                 />
               ))}
             </AnimatePresence>
@@ -445,96 +304,13 @@ function WelcomeMessage({ dict }: { dict: AskAIDict }) {
         <Bot className="w-5 h-5 text-white" />
       </motion.div>
 
-      {/* Message Content - full width, no bubble (matches AI messages) */}
+      {/* Message Content */}
       <div className="flex-1 min-w-0">
         <span className="text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5 block">
           {dict.aiName}
         </span>
         <div className="text-black/90 text-[15px] leading-relaxed">
           <p>{dict.welcomeMessage}</p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// Message bubble for chat messages from AI SDK
-function MessageBubble({
-  message,
-  dict,
-  getMessageText,
-}: {
-  message: UIMessage;
-  dict: AskAIDict;
-  getMessageText: (message: UIMessage) => string;
-}) {
-  const isUser = message.role === "user";
-  const content = getMessageText(message);
-
-  // Memoize parsed markdown to avoid re-parsing on every render
-  const parsedContent = useMemo(() => parseMarkdown(content), [content]);
-
-  if (isUser) {
-    // User messages keep the bubble style
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-        className="flex items-start gap-4 flex-row-reverse"
-      >
-        {/* Avatar */}
-        <motion.div
-          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg bg-black/80"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <User className="w-5 h-5 text-white" />
-        </motion.div>
-
-        {/* Message Content */}
-        <div className="max-w-[80%] text-right">
-          <div
-            className="px-5 py-4 rounded-2xl bg-black/80 text-white rounded-tr-sm"
-            style={{ boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)" }}
-          >
-            <p className="text-[15px] leading-relaxed whitespace-pre-wrap">
-              {content}
-            </p>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // AI messages - full width, no bubble
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-      className="flex items-start gap-4"
-    >
-      {/* Avatar */}
-      <motion.div
-        className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg bg-linear-to-br from-[#0077cc] to-[#003e7c]"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-      >
-        <Bot className="w-5 h-5 text-white" />
-      </motion.div>
-
-      {/* Message Content - full width, no bubble */}
-      <div className="flex-1 min-w-0">
-        <span className="text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5 block">
-          {dict.aiName}
-        </span>
-        <div className="text-black/90 text-[15px] leading-relaxed">
-          {parsedContent}
         </div>
       </div>
     </motion.div>
