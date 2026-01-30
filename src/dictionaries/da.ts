@@ -131,5 +131,7 @@ export const da = {
     aiName: "Silab AI",
     welcomeMessage:
       "Hej! Jeg er her for at besvare spørgsmål om Silabs ydelser, og om vi er det rette match til dit projekt. Spørg løs om vores tekniske ekspertise, projektmetoder eller eventuelle specifikke krav du har.",
+    rateLimitMessage:
+      "Du har nået beskedgrænsen for nu! Jeg vil gerne fortsætte vores samtale — hvad med at booke et opkald med Silas? Han kan besvare alle dine spørgsmål og drøfte, hvordan Silab kan hjælpe med at realisere dine idéer.",
   },
 };

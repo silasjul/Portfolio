@@ -131,5 +131,7 @@ export const en = {
     aiName: "Silab AI",
     welcomeMessage:
       "Hi! I'm here to help answer questions about Silab's services and whether we're the right fit for your project. Feel free to ask about our technical expertise, project approach, or any specific requirements you have in mind.",
+    rateLimitMessage:
+      "You've reached the message limit for now! I'd love to continue our conversation — why not book a discovery call with Silas? He can answer all your questions and discuss how Silab can help bring your ideas to life.",
   },
 };

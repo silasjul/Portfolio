@@ -1,7 +1,10 @@
 import React from "react";
 
-export default function MarkdownParser(text: string): React.ReactNode[] {
+export default function MarkdownParser(text: string): React.ReactNode {
   let key = 0;
+
+  // Trim leading/trailing whitespace and empty lines
+  text = text.trim();
 
   // Process inline formatting within a line
   const processInline = (str: string): React.ReactNode[] => {
@@ -43,28 +46,28 @@ export default function MarkdownParser(text: string): React.ReactNode[] {
   };
 
   // Process a single line and return appropriate element
-  const processLine = (line: string, idx: number): React.ReactNode => {
+  const processLine = (line: string, idx: number): React.ReactNode | null => {
     const trimmed = line.trim();
 
-    // Empty line
+    // Empty line - skip it, spacing is handled by flex gap
     if (!trimmed) {
-      return <br key={`br-${key++}`} />;
+      return null;
     }
 
     // Heading: # ## ###
     if (trimmed.startsWith('### ')) {
-      return <h4 key={`h4-${key++}`} className="font-semibold text-base mt-3 mb-1">{processInline(trimmed.slice(4))}</h4>;
+      return <h4 key={`h4-${key++}`} className="font-semibold text-base">{processInline(trimmed.slice(4))}</h4>;
     }
     if (trimmed.startsWith('## ')) {
-      return <h3 key={`h3-${key++}`} className="font-semibold text-lg mt-4 mb-1">{processInline(trimmed.slice(3))}</h3>;
+      return <h3 key={`h3-${key++}`} className="font-semibold text-lg">{processInline(trimmed.slice(3))}</h3>;
     }
     if (trimmed.startsWith('# ')) {
-      return <h2 key={`h2-${key++}`} className="font-bold text-xl mt-4 mb-2">{processInline(trimmed.slice(2))}</h2>;
+      return <h2 key={`h2-${key++}`} className="font-bold text-xl">{processInline(trimmed.slice(2))}</h2>;
     }
 
     // Horizontal rule: --- or ***
     if (/^(-{3,}|\*{3,})$/.test(trimmed)) {
-      return <hr key={`hr-${key++}`} className="my-4 border-black/20" />;
+      return <hr key={`hr-${key++}`} className="border-black/20" />;
     }
 
     // Bullet point: * or - at start of line (not italic)
@@ -89,7 +92,7 @@ export default function MarkdownParser(text: string): React.ReactNode[] {
     }
 
     // Regular paragraph
-    return <p key={`p-${key++}`} className="mb-1">{processInline(line)}</p>;
+    return <span key={`p-${key++}`}>{processInline(line)}</span>;
   };
 
   // First, extract and handle code blocks
@@ -116,18 +119,22 @@ export default function MarkdownParser(text: string): React.ReactNode[] {
   for (const segment of segments) {
     if (segment.type === 'code') {
       result.push(
-        <pre key={`code-${key++}`} className="bg-black/10 rounded-lg p-4 my-3 overflow-x-auto">
+        <pre key={`code-${key++}`} className="bg-black/10 rounded-lg p-4 overflow-x-auto">
           <code className="text-sm font-mono whitespace-pre">{segment.content}</code>
         </pre>
       );
     } else {
       // Split text into lines and process each
       const lines = segment.content.split('\n');
+
       for (let i = 0; i < lines.length; i++) {
-        result.push(processLine(lines[i], i));
+        const node = processLine(lines[i], i);
+        if (node !== null) {
+          result.push(node);
+        }
       }
     }
   }
 
-  return result;
+  return result
 }

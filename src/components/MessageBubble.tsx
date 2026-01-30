@@ -5,6 +5,7 @@ import MarkdownParser from "@/components/MarkdownParser";
 import { useMemo } from "react";
 import type { AskAIDict } from "@/components/sections/AskAI";
 import BookingWrapper from "@/components/BookingWrapper";
+import { RainbowButton } from "./ui/rainbow-button";
 
 // Helper to extract text content from a UIMessage
 function getMessageText(message: UIMessage): string {
@@ -40,8 +41,6 @@ export default function MessageBubble({
   const isUser = message.role === "user";
   const content = getMessageText(message);
   
-
-  console.log(message)
   // Only show CTA when streaming is done and tool was called
   const showCTA = !isStreaming && shouldShowCTA(message);
 
@@ -108,7 +107,7 @@ export default function MessageBubble({
           <span className="text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5 block">
             {dict.aiName}
           </span>
-          <div className="text-black/90 text-[15px] leading-relaxed">
+          <div className="text-black/90 text-[15px] leading-relaxed flex flex-col gap-2">
             {parsedContent}
           </div>
           
@@ -121,15 +120,9 @@ export default function MessageBubble({
               className="mt-4"
             >
               <BookingWrapper theme="light">
-                <motion.button
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-black text-white font-medium rounded-full shadow-lg cursor-pointer"
-                  whileHover={{ scale: 1.02, boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)" }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Calendar className="w-4 h-4" />
+                <RainbowButton className="rounded-full p-5 cursor-pointer">
                   Book a Discovery Call
-                </motion.button>
+                </RainbowButton>
               </BookingWrapper>
             </motion.div>
           )}

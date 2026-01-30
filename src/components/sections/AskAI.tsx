@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { Send, Sparkles, Bot, Loader2 } from "lucide-react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import MessageBubble from "@/components/MessageBubble";
@@ -16,6 +16,7 @@ export type AskAIDict = {
   suggestedQuestions: string[];
   aiName: string;
   welcomeMessage: string;
+  rateLimitMessage: string;
 };
 
 export default function AskAI({ dict }: { dict: AskAIDict }) {
@@ -26,7 +27,69 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   const [input, setInput] = useState("");
 
   // Use the AI SDK's useChat hook for streaming
-  const { messages, sendMessage, status } = useChat();
+  const { messages, sendMessage, status, error } = useChat();
+  const [rateLimitResponses, setRateLimitResponses] = useState<UIMessage[]>([]);
+
+  // Check for rate limit error and add a response for each user message
+  useEffect(() => {
+    if (error?.message?.toLowerCase().includes("rate limit")) {
+      // Find user messages that don't have a corresponding rate limit response
+      const userMessages = messages.filter(m => m.role === "user");
+      const responseCount = rateLimitResponses.length;
+      
+      // If there are more user messages than responses, add new responses
+      if (userMessages.length > responseCount) {
+        const newResponses: UIMessage[] = [];
+        for (let i = responseCount; i < userMessages.length; i++) {
+          const toolCallId = `cta-${Date.now()}-${i}`;
+          newResponses.push({
+            id: `rate-limit-${Date.now()}-${i}`,
+            role: "assistant",
+            parts: [
+              {
+                type: "text",
+                text: dict.rateLimitMessage,
+              },
+              {
+                type: "tool-display_cta",
+                toolCallId,
+                state: "result",
+                input: { shouldShow: true },
+                output: { shouldShow: true },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              } as any,
+            ],
+            createdAt: new Date(),
+          } as UIMessage);
+        }
+        setRateLimitResponses(prev => [...prev, ...newResponses]);
+      }
+    }
+  }, [error, messages, rateLimitResponses.length, dict.rateLimitMessage]);
+
+  // Combine real messages with rate limit responses (interleaved correctly)
+  const allMessages = useMemo(() => {
+    if (rateLimitResponses.length === 0) return messages;
+    
+    const result: UIMessage[] = [];
+    let rateLimitIndex = 0;
+    
+    for (const msg of messages) {
+      result.push(msg);
+      // After each user message, check if we need to add a rate limit response
+      if (msg.role === "user" && rateLimitIndex < rateLimitResponses.length) {
+        // Only add rate limit response if there's no assistant message following this user message
+        const msgIndex = messages.indexOf(msg);
+        const nextMsg = messages[msgIndex + 1];
+        if (!nextMsg || nextMsg.role === "user") {
+          result.push(rateLimitResponses[rateLimitIndex]);
+          rateLimitIndex++;
+        }
+      }
+    }
+    
+    return result;
+  }, [messages, rateLimitResponses]);
 
   const isLoading = status === "streaming" || status === "submitted";
   // Only show typing indicator when waiting for response, not while streaming
@@ -140,23 +203,24 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
           />
 
           {/* Messages Area */}
-          <div
-            ref={messagesContainerRef}
-            onScroll={handleScroll}
-            onWheel={(e) => e.stopPropagation()}
-            data-lenis-prevent
-            className="h-100 md:h-[450px] overflow-y-auto overscroll-contain p-6 md:p-8 space-y-6 chat-scrollbar"
-          >
+          <div className="relative">
+            <div
+              ref={messagesContainerRef}
+              onScroll={handleScroll}
+              onWheel={(e) => e.stopPropagation()}
+              data-lenis-prevent
+              className="h-100 md:h-[450px] overflow-y-auto overscroll-contain p-6 md:p-8 space-y-6 chat-scrollbar"
+            >
             <AnimatePresence initial={false}>
               {/* Welcome message - always shown first */}
               <WelcomeMessage key="welcome" dict={dict} />
 
               {/* Chat messages from AI SDK */}
-              {messages.map((message, index) => {
+              {allMessages.map((message, index) => {
                 // Check if this is the last assistant message and we're still streaming
-                const isLastMessage = index === messages.length - 1;
+                const isLastMessage = index === allMessages.length - 1;
                 const isMessageStreaming = isLastMessage && message.role === "assistant" && status === "streaming";
-                
+
                 return (
                   <MessageBubble
                     key={message.id}
@@ -206,37 +270,37 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
 
-          {/* Suggested Questions */}
-          <AnimatePresence>
-            {messages.length === 0 && (
-              <motion.div
-                className="px-6 md:px-8 pb-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="flex flex-wrap gap-2">
-                  {dict.suggestedQuestions.map((question, index) => (
-                    <motion.button
-                      key={question}
-                      onClick={() => handleSuggestedQuestion(question)}
-                      className="px-4 py-2 text-sm text-black/80 bg-white/50 rounded-full border border-black/10 cursor-pointer"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.7)", borderColor: "rgba(0, 119, 204, 0.3)" }}
-                      whileTap={{ scale: 0.98 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {question}
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
+
+            {/* Suggested Questions - overlaid at bottom of messages area */}
+            <AnimatePresence>
+              {messages.length === 0 && (
+                <motion.div
+                  className="absolute bottom-0 left-0 right-0 pb-4 px-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex flex-wrap gap-2">
+                    {dict.suggestedQuestions.map((question) => (
+                      <motion.button
+                        key={question}
+                        onClick={() => handleSuggestedQuestion(question)}
+                        className="px-4 py-2 text-sm text-black/80 bg-white/70 rounded-full border border-black/10 cursor-pointer backdrop-blur-sm"
+                        whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.9)", borderColor: "rgba(0, 119, 204, 0.3)" }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {question}
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Input Area */}
           <form onSubmit={handleSendMessage} className="p-4 md:p-6 border-t border-white/30">
@@ -323,3 +387,4 @@ function WelcomeMessage({ dict }: { dict: AskAIDict }) {
     </motion.div>
   );
 }
+
