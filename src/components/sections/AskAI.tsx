@@ -29,6 +29,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   const [isStuckToBottom, setIsStuckToBottom] = useState(true);
   const [input, setInput] = useState("");
   const [token, setToken] = useState<string | null>(null);
+  const [isScrollable, setIsScrollable] = useState(false);
   // Store token in a ref so sendMessage always has access to latest value
   const tokenRef = useRef<string | null>(null);
   useEffect(() => {
@@ -146,6 +147,31 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
       const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
       const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
       setIsStuckToBottom(isAtBottom);
+      // Update scrollable state
+      setIsScrollable(scrollHeight > clientHeight);
+    }
+  }, []);
+
+  // Only prevent page scroll when chat is scrollable and scroll would stay within bounds
+  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    if (!messagesContainerRef.current) return;
+    
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+    const isScrollable = scrollHeight > clientHeight;
+    
+    if (!isScrollable) {
+      // Chat is not overflowing, allow page scroll
+      return;
+    }
+    
+    const scrollingDown = e.deltaY > 0;
+    const scrollingUp = e.deltaY < 0;
+    const isAtTop = scrollTop <= 0;
+    const isAtBottom = scrollHeight - scrollTop <= clientHeight;
+    
+    // Only stop propagation if the scroll would stay within the chat
+    if ((scrollingDown && !isAtBottom) || (scrollingUp && !isAtTop)) {
+      e.stopPropagation();
     }
   }, []);
 
@@ -155,6 +181,14 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
       scrollToBottom(true);
     }
   }, [allMessages, isLoading, isStuckToBottom, scrollToBottom]);
+
+  // Check scrollability on mount and when messages change
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      const { scrollHeight, clientHeight } = messagesContainerRef.current;
+      setIsScrollable(scrollHeight > clientHeight);
+    }
+  }, [allMessages]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -255,8 +289,8 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
             <div
               ref={messagesContainerRef}
               onScroll={handleScroll}
-              onWheel={(e) => e.stopPropagation()}
-              data-lenis-prevent
+              onWheel={handleWheel}
+              {...(isScrollable ? { 'data-lenis-prevent': true } : {})}
               className="h-100 md:h-[450px] overflow-y-auto overscroll-contain p-6 md:p-8 space-y-6 chat-scrollbar"
             >
               {/* Welcome message - always shown first */}
@@ -324,13 +358,13 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               {allMessages.length === 0 && (
                 <motion.div
                   key="suggested-questions"
-                  className="absolute bottom-0 left-0 right-0 pb-4 px-8"
+                  className="absolute bottom-0 left-0 right-0 pb-4 px-8 pointer-events-none"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, transition: { duration: 0.15 } }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 pointer-events-auto">
                     {dict.suggestedQuestions.map((question) => (
                       <motion.button
                         key={question}
