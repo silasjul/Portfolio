@@ -9,11 +9,19 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.18",
+    "@ai-sdk/google-vertex": "^4.0.35",
+    "@ai-sdk/react": "^3.0.61",
     "@calcom/embed-react": "^1.5.3",
     "@formatjs/intl-localematcher": "^0.8.0",
+    "@marsidev/react-turnstile": "^1.4.1",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@upstash/ratelimit": "^2.0.8",
+    "ai": "^6.0.62",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.0",
+    "jose": "^6.1.3",
     "lenis": "^1.3.4",
     "lucide-react": "^0.522.0",
     "negotiator": "^1.0.0",
@@ -21,7 +29,8 @@
     "posthog-js": "^1.336.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",

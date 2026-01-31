@@ -38,7 +38,7 @@ export default function Hero({ dict }: { dict: HeroDict }) {
         </motion.h1>
 
         {/* Scroll indicator for mobile */}
-        <motion.div 
+        <motion.div
           className="md:hidden flex items-center gap-2 mt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.6 }}

@@ -55,13 +55,13 @@ export default function Services({ dict }: { dict: ServicesDict }) {
     <section
       id="services"
       ref={containerRef}
-      className="relative py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
+      className="relative w-full max-w-[100vw] overflow-x-hidden py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
     >
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="relative z-10 w-full">
         {/* Section Header */}
         <motion.div
-          className="mb-14 md:mb-20"
+          className="mb-8 md:mb-20"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -69,13 +69,13 @@ export default function Services({ dict }: { dict: ServicesDict }) {
           <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
             {dict.label}
           </span>
-          <h2 className="text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
             {dict.title}
           </h2>
         </motion.div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
           {services.map((service, index) => (
             <ServiceCard
               key={service.title}
@@ -157,10 +157,10 @@ function ServiceCard({
   const glassHoverShadow = `${hoveredShadow}, inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 16px 8px rgba(255, 255, 255, 0.2)`;
 
   return (
-    <div style={{ perspective: "1000px" }}>
+    <div style={{ perspective: "1000px" }} className="h-full">
       <motion.div
         ref={cardRef}
-        className="group relative p-8 md:p-10 rounded-[20px] overflow-hidden border border-white/30"
+        className="group relative h-full p-6 sm:p-8 md:p-10 rounded-[20px] overflow-hidden border border-white/30"
         initial={{ opacity: 0, y: 50, boxShadow: glassBaseShadow }}
         animate={
           isInView
@@ -188,11 +188,18 @@ function ServiceCard({
         onMouseLeave={handleMouseLeave}
         style={{
           transformStyle: "preserve-3d",
-          background: "rgba(255, 255, 255, 0.21)",
-          backdropFilter: "blur(17px)",
-          WebkitBackdropFilter: "blur(17px)",
+          background: "rgba(255, 255, 255, 0.35)",
+          isolation: "isolate",
         }}
       >
+        {/* Glass blur layer - separate from content */}
+        <div
+          className="absolute inset-0 rounded-[20px] -z-10"
+          style={{
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+          }}
+        />
         {/* Top edge highlight */}
         <div
           className="pointer-events-none absolute top-0 left-0 right-0 h-[1px]"
@@ -219,32 +226,34 @@ function ServiceCard({
 
         {/* Content with 3D lift */}
         <div
-          className="relative z-10"
+          className="relative z-10 h-full flex flex-col"
           style={{
             transform: isHovered ? "translateZ(30px)" : "translateZ(0px)",
             transition: "transform 0.3s ease-out",
           }}
         >
-          {/* Icon */}
-          <div
-            className="w-12 h-12 rounded-xl bg-[#0077cc]/10 flex items-center justify-center mb-6 group-hover:bg-[#0077cc]/20 transition-all duration-300"
-            style={{
-              transform: isHovered ? "translateZ(20px)" : "translateZ(0px)",
-              transition: "transform 0.3s ease-out, background-color 0.3s",
-            }}
-          >
-            <Icon className="w-6 h-6 text-[#0077cc]" />
+          <div className="grow">
+            {/* Icon */}
+            <div
+              className="w-12 h-12 rounded-xl bg-[#0077cc]/10 flex items-center justify-center mb-6 group-hover:bg-[#0077cc]/20 transition-all duration-300"
+              style={{
+                transform: isHovered ? "translateZ(20px)" : "translateZ(0px)",
+                transition: "transform 0.3s ease-out, background-color 0.3s",
+              }}
+            >
+              <Icon className="w-6 h-6 text-[#0077cc]" />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-2xl md:text-3xl text-black mb-4 font-(family-name:--font-playfair)">
+              {service.title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-black/80 text-lg leading-relaxed mb-6">
+              {service.description}
+            </p>
           </div>
-
-          {/* Title */}
-          <h3 className="text-2xl md:text-3xl text-black mb-4 font-(family-name:--font-playfair)">
-            {service.title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-black/80 text-lg leading-relaxed mb-6">
-            {service.description}
-          </p>
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2">

@@ -1,8 +1,8 @@
 "use client"
 
-import { motion, Transition, useInView } from 'framer-motion';
+import { motion, Transition } from 'framer-motion';
 import Image from 'next/image';
-import { useRef, useEffect, useState, useLayoutEffect } from 'react';
+import { useRef, useEffect, useState, useLayoutEffect, useCallback } from 'react';
 import GetInTouchCTA from '../ui/GetInTouchCTA';
 import { useLenis } from 'lenis/react';
 import BookingWrapper from '../BookingWrapper';
@@ -13,75 +13,88 @@ type NavDict = {
   services: string;
   works: string;
   about: string;
+  "ask-ai": string;
+  contact: string;
   getInTouch: string;
 }
 
-// Hook to track which section is in view
-function useSectionInView(sectionId: string) {
-  const ref = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    ref.current = document.getElementById(sectionId);
-  }, [sectionId]);
-
-  const isInView = useInView(ref, {
-    margin: "-50% 0px -50% 0px",
-    amount: 0
-  });
-
-  return isInView;
-}
+const sections = ['services', 'works', 'about', 'ask-ai', 'contact'] as const;
 
 export default function Navbar({ dict }: { dict: NavDict }) {
   const lenis = useLenis();
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [isScrolling, setIsScrolling] = useState(false);
+  const isClickLockedRef = useRef(false);
 
-  // Track each section's visibility
-  const servicesInView = useSectionInView('services');
-  const worksInView = useSectionInView('works');
-  const aboutInView = useSectionInView('about');
-
-  // Update active section based on which is in view
+  // Single IntersectionObserver to track all sections
   useEffect(() => {
-    if (isScrolling) return;
+    const sectionElements = sections
+      .map(id => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
 
-    if (servicesInView) setActiveSection('services');
-    else if (worksInView) setActiveSection('works');
-    else if (aboutInView) setActiveSection('about');
-    else setActiveSection(null);
-  }, [servicesInView, worksInView, aboutInView, isScrolling]);
+    if (sectionElements.length === 0) return;
 
-  const scrollTo = (target: string) => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Don't update if we're in a click-locked state
+        if (isClickLockedRef.current) return;
+
+        // Find the entry that is most in view (highest intersection ratio)
+        // or the one closest to the center of the viewport
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+            return;
+          }
+        }
+      },
+      {
+        // Trigger when section crosses the middle 50% of the viewport
+        rootMargin: "-40% 0px -40% 0px",
+        threshold: 0
+      }
+    );
+
+    sectionElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollTo = useCallback((target: string) => {
     const targetSection = target.replace('#', '');
+
+    // Immediately set active section and lock it
     setActiveSection(targetSection);
+    isClickLockedRef.current = true;
+
+    // Always set a safety timeout to unlock (in case onComplete doesn't fire)
+    const safetyTimeout = setTimeout(() => {
+      isClickLockedRef.current = false;
+    }, 2000);
 
     if (lenis) {
-      setIsScrolling(true);
-
-      // Safety timeout in case onComplete doesn't fire
-      const timeout = setTimeout(() => setIsScrolling(false), 500);
-
       lenis.scrollTo(target, {
         duration: 1.5,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         onComplete: () => {
-          clearTimeout(timeout);
-          setIsScrolling(false);
+          clearTimeout(safetyTimeout);
+          // Unlock after scroll completes + small buffer for observer to settle
+          setTimeout(() => {
+            isClickLockedRef.current = false;
+          }, 200);
         }
       });
     }
-  };
+  }, [lenis]);
 
   return (
     <motion.div
-      className="fixed py-8 px-8 w-full flex justify-between items-center text-[1.4rem] z-50"
+      className="fixed py-6 sm:py-8 px-6 sm:px-8 w-full max-w-[100vw] flex justify-between items-center text-[1.4rem] z-50"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={transition}
     >
       <Logo scrollTo={scrollTo} />
-      <div className='hidden md:block'>
+      <div className='hidden nav:block absolute left-1/2 -translate-x-1/2'>
         <NavLinks scrollTo={scrollTo} dict={dict} activeSection={activeSection} />
       </div>
       <div className="flex items-center gap-4">
@@ -101,7 +114,7 @@ function Logo({ scrollTo }: { scrollTo: (target: string) => void }) {
       onClick={() => scrollTo('top')}
     >
       <Image
-        className="rounded-md w-15 opacity-90"
+        className="rounded-md w-12 sm:w-15 opacity-90"
         src={'/logo.png'}
         alt={'logo'}
         width={735}
@@ -115,7 +128,7 @@ function CTA({ dict }: { dict: NavDict }) {
   return (
     <BookingWrapper theme="light">
       <motion.div
-        className="inline-block"
+        className="inline-block h-full"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={transition}
@@ -125,8 +138,6 @@ function CTA({ dict }: { dict: NavDict }) {
     </BookingWrapper>
   )
 }
-
-const sections = ['services', 'works', 'about'] as const;
 
 function NavLinks({
   scrollTo,
@@ -171,8 +182,8 @@ function NavLinks({
         }}
         transition={{
           opacity: { duration: 0.2 },
-          left: { type: "spring", stiffness: 300, damping: 35, mass: 1 },
-          width: { type: "spring", stiffness: 300, damping: 35, mass: 1 }
+          left: { type: "tween", duration: 0.4, ease: [0.25, 0.1, 0.25, 1] },
+          width: { type: "tween", duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }
         }}
       />
 

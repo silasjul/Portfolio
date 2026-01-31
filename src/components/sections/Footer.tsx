@@ -35,12 +35,12 @@ export default function Footer({ footerDict, navDict }: { footerDict: FooterDict
   };
 
   return (
-    <footer className="relative py-16 px-8 md:px-16 lg:px-24 bg-white/40 backdrop-blur-sm border-t border-black/10">
+    <footer className="relative py-10 md:py-16 px-5 md:px-16 lg:px-24 bg-white/40 backdrop-blur-sm border-t border-black/10">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-10">
 
           {/* Navigation */}
-          <div className="flex gap-8">
+          <div className="flex gap-6 md:gap-8">
             {navLinks.map((link) => (
               <a
                 key={link.name}
