@@ -8,7 +8,6 @@ import Contact from "@/components/sections/Contact";
 import Footer from "@/components/sections/Footer";
 import { VantaParallaxBackground } from "@/components/VantaFog";
 import { getDictionary } from "@/lib/dictionaries";
-import ScrollSvg from "@/components/ScrollSvg";
 
 export default async function Home({ params }: { params: Promise<{ lang: 'en' | 'da' }> }) {
   const { lang } = await params;
@@ -25,7 +24,6 @@ export default async function Home({ params }: { params: Promise<{ lang: 'en' | 
       </section>
 
       <div className="relative">
-        {/* <ScrollSvg /> */}
         <div id="services">
           <Services dict={dict.services} />
         </div>

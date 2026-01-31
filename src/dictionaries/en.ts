@@ -3,6 +3,8 @@ export const en = {
     services: "Services",
     works: "Works",
     about: "About",
+    "ask-ai": "AI FAQ",
+    contact: "Contact",
     getInTouch: "Get In Touch",
   },
   hero: {
@@ -69,7 +71,7 @@ export const en = {
       category: "Fullstack Development",
       description:
         "Online stores with payment integration, inventory management, and optimized checkout flows. Built with modern frameworks for speed and scalability.",
-      tech: "Next.js, Stripe, PostgreSQL",
+      tech: "Next.js, Stripe, Shopify Hydrogen, Medusa",
     },
   },
   about: {
@@ -126,7 +128,7 @@ export const en = {
       "What technologies do you specialize in?",
       "Can you help with AI integration?",
       "What's your typical project timeline?",
-      "Do you work with startups?",
+      "What is your process?",
     ],
     aiName: "Silab AI",
     welcomeMessage:

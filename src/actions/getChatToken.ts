@@ -27,7 +27,6 @@ export async function getChatToken(captchaToken: string) {
   const secret = new TextEncoder().encode(process.env.CHAT_SECRET_KEY);
 
   // 3. Print the Ticket (JWT)
-  // It is valid for only 5 minutes
   const token = await new SignJWT({ allowed: true })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()

@@ -3,7 +3,9 @@ export const da = {
     services: "Kompetencer",
     works: "Projekter",
     about: "Om os",
-    getInTouch: "Kontakt os",
+    "ask-ai": "AI FAQ",
+    contact: "Kontakt",
+    getInTouch: "Lad os snakke",
   },
   hero: {
     line1: "Smartere",
@@ -16,7 +18,7 @@ export const da = {
     fullstack: {
       title: "Fullstack-udvikling",
       description:
-        "Webapplikationer bygget med moderne frameworks — fra elegante frontends til robuste backends.",
+        "Webapplikationer bygget med moderne frameworks — lækkert design og robuste backends.",
       tags: "React, Next.js, Node.js, TypeScript",
     },
     ai: {
@@ -29,12 +31,12 @@ export const da = {
       title: "Performance & vækst",
       description:
         "Vi optimerer til lynhurtige loadtider, stærk SEO og indhold, der konverterer 'kliks' til kunder.",
-      tags: "Core Web Vitals, SEO, Analytics",
+      tags: "PostHog, Core Web Vitals, SEO, Analytics",
     },
     architecture: {
       title: "Systemarkitektur",
       description:
-        "Skalerbar infrastruktur, der vokser med din forretning. Ren kode, tydelig dokumentation og et fremtidssikret fundament.",
+        "Fremtidssikret it-infrastruktur. Komplet dokumentation, automatiserede tests og hostet på anerkendte cloud-platforme.",
       tags: "Google Cloud, Docker, CI/CD, APIs",
     },
   },
@@ -48,7 +50,7 @@ export const da = {
       category: "AI-integration",
       description:
         "Intelligente værktøjer, der udnytter LLM'er og machine learning — fra dokumentbehandling til chatbots og automatiserede workflows. Fantasien sætter grænserne.",
-      tech: "Python, OpenAI, React",
+      tech: "Python, OpenAI, React, LangChain",
     },
     customWeb: {
       title: "Skræddersyede webapplikationer",
@@ -61,15 +63,15 @@ export const da = {
       title: "Virksomhedshjemmesider",
       category: "Frontend-udvikling",
       description:
-        "Hurtige, responsive og flot designede websites, der konverterer besøgende til kunder. SEO-optimerede og mobilvenlige.",
-      tech: "Next.js, Tailwind, Vercel",
+        "Hurtige, responsive og flot designede hjemmesider, der konverterer besøgende til kunder. SEO-optimerede og mobilvenlige.",
+      tech: "Next.js, Tailwind, Vercel, Framer Motion, GSAP",
     },
     ecommerce: {
       title: "E-handelsløsninger",
       category: "Fullstack-udvikling",
       description:
-        "Webshops med betalingsintegration, lagerstyring og optimerede checkout-flows. Bygget med moderne frameworks til høj hastighed og skalerbarhed.",
-      tech: "Next.js, Stripe, PostgreSQL",
+        "E-handelsløsninger med betalingsintegration, lagerstyring og optimerede checkout-flows, bygget med moderne frameworks.",
+      tech: "Next.js, Stripe, Shopify Hydrogen, Medusa",
     },
   },
   about: {
@@ -78,13 +80,13 @@ export const da = {
     titleItalic: "din",
     titleEnd: "vision.",
     paragraph1:
-      "Vi er et team af udviklere, der brænder for at omsætte idéer til digitale produkter. Vi specialiserer os i moderne webteknologi og AI-integration og holder os opdaterede på de nyeste værktøjer og 'best practices'.",
+      "Vi er et team af udviklere, der brænder for at omsætte idéer til digitale produkter. Vi specialiserer os i moderne webteknologi og AI-integration.",
     paragraph2:
-      "Vi er altid på udkig efter nye projekter uanset om det er en startup-MVP, en virksomhedshjemmeside eller et AI-drevet værktøj, investerer vi tiden og energien i at gøre det virkelig godt.",
+      "Vi er altid på udkig efter nye projekter uanset om det er en startup-MVP, en virksomhedshjemmeside eller et AI-drevet værktøj, investerer vi tiden og energien, så du får et fantastisk produkt.",
     paragraph3: "Det får du, når du arbejder med os:",
     directComm: "direkte kommunikation",
     competitiveRates: "konkurrencedygtige priser",
-    paragraph3End: "og et team, der gerne vil se dig lykkes.",
+    paragraph3End: "og et team, der vil kæmpe for din succes.",
     skillsLabel: "Tekniske kompetencer",
     skills:
       "React & Next.js, TypeScript, Node.js, Python, AI/ML-integration, Cloud-arkitektur, Databasedesign, API-udvikling",
@@ -102,7 +104,7 @@ export const da = {
     title: "Klar til at starte",
     titleLine2: "dit projekt?",
     description:
-      "Vi tager gerne en snak om nye muligheder og udfordringer. Lad os tale om, hvordan vi kan arbejde sammen og hjælpe dig med at nå dine mål.",
+      "Vi er altid klar på en snak om nye muligheder og projekter. Lad os tale om, hvordan vi kan arbejde sammen og hjælpe dig med at nå dine mål.",
     cta: "Kontakt os",
     emailLabel: "E-mail",
     email: "contact@silab.dk",
@@ -119,18 +121,18 @@ export const da = {
     title: "Usikker på om vi er det",
     titleHighlight: "rette match?",
     subtitle:
-      "Spørg vores AI om dine projektkrav, vores kompetencer eller andet du gerne vil vide.",
+      "Spørg vores AI om dine projektkrav, vores kompetencer eller andet du har på tankerne.",
     placeholder: "Spørg om dine projektkrav...",
     sendButton: "Send",
     suggestedQuestions: [
       "Hvilke teknologier specialiserer I jer i?",
+      "Hvordan er jeres arbejdsproces?",
       "Kan I hjælpe med AI-integration?",
       "Hvad er jeres typiske projekttidsramme?",
-      "Arbejder I med startups?",
     ],
     aiName: "Silab AI",
     welcomeMessage:
-      "Hej! Jeg er her for at besvare spørgsmål om Silabs ydelser, og om vi er det rette match til dit projekt. Spørg løs om vores tekniske ekspertise, projektmetoder eller eventuelle specifikke krav du har.",
+      "Hej! Jeg er her for at besvare spørgsmål om Silab, og om vi er det rette match til dit projekt. Spørg løs om vores tekniske ekspertise, projektmetoder eller andre specifikke krav du har.",
     rateLimitMessage:
       "Du har nået beskedgrænsen for nu! Jeg vil gerne fortsætte vores samtale — hvad med at booke et opkald med Silas? Han kan besvare alle dine spørgsmål og drøfte, hvordan Silab kan hjælpe med at realisere dine idéer.",
     bookingButton: "Book et uforpligtende opkald",

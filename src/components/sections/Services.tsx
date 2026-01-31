@@ -157,10 +157,10 @@ function ServiceCard({
   const glassHoverShadow = `${hoveredShadow}, inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 16px 8px rgba(255, 255, 255, 0.2)`;
 
   return (
-    <div style={{ perspective: "1000px" }}>
+    <div style={{ perspective: "1000px" }} className="h-full">
       <motion.div
         ref={cardRef}
-        className="group relative p-8 md:p-10 rounded-[20px] overflow-hidden border border-white/30"
+        className="group relative h-full p-8 md:p-10 rounded-[20px] overflow-hidden border border-white/30"
         initial={{ opacity: 0, y: 50, boxShadow: glassBaseShadow }}
         animate={
           isInView
@@ -219,32 +219,34 @@ function ServiceCard({
 
         {/* Content with 3D lift */}
         <div
-          className="relative z-10"
+          className="relative z-10 h-full flex flex-col"
           style={{
             transform: isHovered ? "translateZ(30px)" : "translateZ(0px)",
             transition: "transform 0.3s ease-out",
           }}
         >
-          {/* Icon */}
-          <div
-            className="w-12 h-12 rounded-xl bg-[#0077cc]/10 flex items-center justify-center mb-6 group-hover:bg-[#0077cc]/20 transition-all duration-300"
-            style={{
-              transform: isHovered ? "translateZ(20px)" : "translateZ(0px)",
-              transition: "transform 0.3s ease-out, background-color 0.3s",
-            }}
-          >
-            <Icon className="w-6 h-6 text-[#0077cc]" />
+          <div className="grow">
+            {/* Icon */}
+            <div
+              className="w-12 h-12 rounded-xl bg-[#0077cc]/10 flex items-center justify-center mb-6 group-hover:bg-[#0077cc]/20 transition-all duration-300"
+              style={{
+                transform: isHovered ? "translateZ(20px)" : "translateZ(0px)",
+                transition: "transform 0.3s ease-out, background-color 0.3s",
+              }}
+            >
+              <Icon className="w-6 h-6 text-[#0077cc]" />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-2xl md:text-3xl text-black mb-4 font-(family-name:--font-playfair)">
+              {service.title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-black/80 text-lg leading-relaxed mb-6">
+              {service.description}
+            </p>
           </div>
-
-          {/* Title */}
-          <h3 className="text-2xl md:text-3xl text-black mb-4 font-(family-name:--font-playfair)">
-            {service.title}
-          </h3>
-
-          {/* Description */}
-          <p className="text-black/80 text-lg leading-relaxed mb-6">
-            {service.description}
-          </p>
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2">

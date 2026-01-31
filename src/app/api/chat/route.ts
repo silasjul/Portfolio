@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       {
         status: 401,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       {
         status: 401,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       "Service momentarily unavailable due to high traffic.",
       {
         status: 429,
-      },
+      }
     );
   }
 
@@ -103,7 +103,7 @@ export async function POST(req: Request) {
           shouldShow: z
             .boolean()
             .describe(
-              "Set to true to show a booking button below this message. Call this in every response where booking is relevant.",
+              "Set to true to show a booking button below this message. Call this in every response where booking is relevant."
             ),
         }),
         execute: async ({ shouldShow }) => {
