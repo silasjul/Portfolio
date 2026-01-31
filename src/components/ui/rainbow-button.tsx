@@ -1,8 +1,27 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+
+// Inject rainbow keyframes once
+const KEYFRAMES_ID = "rainbow-keyframes"
+function useRainbowKeyframes() {
+  useEffect(() => {
+    if (typeof document === "undefined") return
+    if (document.getElementById(KEYFRAMES_ID)) return
+    
+    const style = document.createElement("style")
+    style.id = KEYFRAMES_ID
+    style.textContent = `
+      @keyframes rainbow {
+        0% { background-position: 0%; }
+        100% { background-position: 200%; }
+      }
+    `
+    document.head.appendChild(style)
+  }, [])
+}
 
 const rainbowButtonVariants = cva(
   cn(
@@ -43,13 +62,24 @@ interface RainbowButtonProps
 }
 
 const RainbowButton = React.forwardRef<HTMLButtonElement, RainbowButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, style, ...props }, ref) => {
+    useRainbowKeyframes()
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
         data-slot="button"
         className={cn(rainbowButtonVariants({ variant, size, className }))}
         ref={ref}
+        style={{
+          "--color-1": "oklch(66.2% 0.225 25.9)",
+          "--color-2": "oklch(60.4% 0.26 302)",
+          "--color-3": "oklch(69.6% 0.165 251)",
+          "--color-4": "oklch(80.2% 0.134 225)",
+          "--color-5": "oklch(90.7% 0.231 133)",
+          "--speed": "2s",
+          animation: "rainbow var(--speed) infinite linear",
+          ...style,
+        } as React.CSSProperties}
         {...props}
       />
     )
