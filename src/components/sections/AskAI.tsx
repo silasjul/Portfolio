@@ -37,10 +37,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   const [isScrollable, setIsScrollable] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [verificationFailed, setVerificationFailed] = useState(false);
-<<<<<<< HEAD
   const [showTooltip, setShowTooltip] = useState(false);
-=======
->>>>>>> origin/main
 
   // Detect mobile screen size for shorter placeholder
   useEffect(() => {
@@ -440,11 +437,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
                   }}
                 />
               </div>
-<<<<<<< HEAD
               <Tooltip open={showTooltip && (!token || verificationFailed)}>
-=======
-              <Tooltip open={!token || verificationFailed}>
->>>>>>> origin/main
                 <TooltipTrigger asChild>
                   <motion.button
                     type="submit"
