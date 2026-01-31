@@ -26,7 +26,7 @@ export default function Contact({ dict }: { dict: ContactDict }) {
   return (
     <section
       ref={containerRef}
-      className="relative py-16 sm:py-24 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden max-w-[100vw]"
+      className="relative py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden max-w-[100vw]"
     >
 
       <div className="relative z-10 max-w-7xl mx-auto">
@@ -36,7 +36,7 @@ export default function Contact({ dict }: { dict: ContactDict }) {
             initial={{ opacity: 0, y: 40 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-            className="flex flex-col"
+            className="flex flex-col min-w-0"
           >
             <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full w-fit">
               {dict.label}
@@ -71,7 +71,7 @@ export default function Contact({ dict }: { dict: ContactDict }) {
           </motion.div>
 
           {/* Right Column - Contact Info */}
-          <div className="flex items-center">
+          <div className="flex items-center min-w-0">
             <motion.div
               className="space-y-8 w-full"
               initial={{ opacity: 0, y: 40 }}

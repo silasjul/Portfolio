@@ -60,7 +60,7 @@ export const da = {
       tech: "React, TypeScript, Node.js",
     },
     business: {
-      title: "Virksomhedshjemmesider",
+      title: "Hjemmesider",
       category: "Frontend-udvikling",
       description:
         "Hurtige, responsive og flot designede hjemmesider, der konverterer besøgende til kunder. SEO-optimerede og mobilvenlige.",
