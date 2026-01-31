@@ -58,7 +58,7 @@ export default function Services({ dict }: { dict: ServicesDict }) {
       className="relative w-full max-w-[100vw] overflow-x-hidden py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
     >
 
-      <div className="relative z-10 w-full">
+      <div className="relative z-10 w-full max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div
           className="mb-8 md:mb-20"
