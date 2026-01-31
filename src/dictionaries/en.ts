@@ -137,5 +137,7 @@ export const en = {
     rateLimitMessage:
       "You've reached the message limit for now! I'd love to continue our conversation — why not book a discovery call with Silas? He can answer all your questions and discuss how Silab can help bring your ideas to life.",
     bookingButton: "Book a Discovery Call",
+    verifyingBrowser: "Verifying browser...",
+    verificationFailed: "Verification failed. Chat unavailable.",
   },
 };
