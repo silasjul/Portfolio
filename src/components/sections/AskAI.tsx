@@ -2,7 +2,9 @@
 
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
-import { Send, Sparkles, Bot, Loader2 } from "lucide-react";
+import { Send, Sparkles, Bot, Loader2, ShieldCheck } from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Spinner } from "@/components/ui/spinner";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import MessageBubble from "@/components/MessageBubble";
 import { Turnstile } from '@marsidev/react-turnstile';
@@ -21,6 +23,8 @@ export type AskAIDict = {
   welcomeMessage: string;
   rateLimitMessage: string;
   bookingButton: string;
+  verifyingBrowser: string;
+  verificationFailed: string;
 };
 
 export default function AskAI({ dict }: { dict: AskAIDict }) {
@@ -32,6 +36,8 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   const [token, setToken] = useState<string | null>(null);
   const [isScrollable, setIsScrollable] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [verificationFailed, setVerificationFailed] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // Detect mobile screen size for shorter placeholder
   useEffect(() => {
@@ -40,6 +46,14 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Delay tooltip appearance until after section animation completes
+  useEffect(() => {
+    if (isInView && !showTooltip) {
+      const timer = setTimeout(() => setShowTooltip(true), 1100); // 0.2s delay + 0.8s duration + 0.1s buffer
+      return () => clearTimeout(timer);
+    }
+  }, [isInView, showTooltip]);
   // Store token in a ref so sendMessage always has access to latest value
   const tokenRef = useRef<string | null>(null);
   useEffect(() => {
@@ -232,10 +246,23 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
       className="relative py-10 md:py-32 px-5 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden scroll-mt-32 max-w-[100vw]"
     >
       {/* Captcha Logic - runs invisibly in background */}
-      {!token && (
+      {!token && !verificationFailed && (
         <Turnstile
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-          onSuccess={async (t) => setToken(await getChatToken(t))}
+          onSuccess={async (t) => {
+            try {
+              const chatToken = await getChatToken(t);
+              if (chatToken) {
+                setToken(chatToken);
+              } else {
+                setVerificationFailed(true);
+              }
+            } catch {
+              setVerificationFailed(true);
+            }
+          }}
+          onError={() => setVerificationFailed(true)}
+          onExpire={() => setVerificationFailed(true)}
         />
       )}
       <div className="relative z-10 max-w-4xl mx-auto">
@@ -410,20 +437,43 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
                   }}
                 />
               </div>
-              <motion.button
-                type="submit"
-                disabled={!input.trim() || isLoading || !token}
-                className="w-11 h-11 sm:w-14 sm:h-14 shrink-0 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] disabled:from-black/20 disabled:to-black/30 flex items-center justify-center text-white shadow-lg disabled:shadow-none cursor-pointer disabled:cursor-not-allowed"
-                whileHover={!input.trim() || isLoading ? {} : { scale: 1.05 }}
-                whileTap={!input.trim() || isLoading ? {} : { scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-              >
-                {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Send className="w-5 h-5" />
-                )}
-              </motion.button>
+              <Tooltip open={showTooltip && (!token || verificationFailed)}>
+                <TooltipTrigger asChild>
+                  <motion.button
+                    type="submit"
+                    disabled={!input.trim() || isLoading || !token}
+                    className="w-11 h-11 sm:w-14 sm:h-14 shrink-0 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] disabled:from-black/20 disabled:to-black/30 flex items-center justify-center text-white shadow-lg disabled:shadow-none cursor-pointer disabled:cursor-not-allowed"
+                    whileHover={!input.trim() || isLoading ? {} : { scale: 1.05 }}
+                    whileTap={!input.trim() || isLoading ? {} : { scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Send className="w-5 h-5" />
+                    )}
+                  </motion.button>
+                </TooltipTrigger>
+                <TooltipContent 
+                  side="top" 
+                  sideOffset={8}
+                  className="bg-white/90 backdrop-blur-sm text-black border border-black/10 shadow-lg"
+                  arrowClassName="bg-white/90 fill-white/90"
+                >
+                  {verificationFailed ? (
+                    <div className="flex items-center gap-2 text-red-600">
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>{dict.verificationFailed}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-[#0077cc] animate-pulse" />
+                      <span>{dict.verifyingBrowser}</span>
+                      <Spinner className="w-3 h-3 text-[#0077cc]" />
+                    </div>
+                  )}
+                </TooltipContent>
+              </Tooltip>
             </div>
           </form>
         </motion.div>

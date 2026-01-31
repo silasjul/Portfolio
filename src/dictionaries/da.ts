@@ -137,5 +137,7 @@ export const da = {
     rateLimitMessage:
       "Du har nået beskedgrænsen for nu! Jeg vil gerne fortsætte vores samtale — hvad med at booke et opkald med Silas? Han kan besvare alle dine spørgsmål og drøfte, hvordan Silab kan hjælpe med at realisere dine idéer.",
     bookingButton: "Book en samtale",
+    verifyingBrowser: "Verificerer browser...",
+    verificationFailed: "Verificering mislykkedes. Chat utilgængelig.",
   },
 };
