@@ -64,7 +64,7 @@ export const da = {
       category: "Frontend-udvikling",
       description:
         "Hurtige, responsive og flot designede hjemmesider, der konverterer besøgende til kunder. SEO-optimerede og mobilvenlige.",
-      tech: "Next.js, Tailwind, Vercel, Framer Motion, GSAP",
+      tech: "Next.js, Tailwind, Vercel, GSAP",
     },
     ecommerce: {
       title: "E-handelsløsninger",
@@ -123,6 +123,7 @@ export const da = {
     subtitle:
       "Spørg vores AI om dine projektkrav, vores kompetencer eller andet du har på tankerne.",
     placeholder: "Spørg om dine projektkrav...",
+    placeholderShort: "Stil et spørgsmål...",
     sendButton: "Send",
     suggestedQuestions: [
       "Hvilke teknologier specialiserer I jer i?",
@@ -135,6 +136,6 @@ export const da = {
       "Hej! Jeg er her for at besvare spørgsmål om Silab, og om vi er det rette match til dit projekt. Spørg løs om vores tekniske ekspertise, projektmetoder eller andre specifikke krav du har.",
     rateLimitMessage:
       "Du har nået beskedgrænsen for nu! Jeg vil gerne fortsætte vores samtale — hvad med at booke et opkald med Silas? Han kan besvare alle dine spørgsmål og drøfte, hvordan Silab kan hjælpe med at realisere dine idéer.",
-    bookingButton: "Book et uforpligtende opkald",
+    bookingButton: "Book en samtale",
   },
 };

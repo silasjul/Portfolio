@@ -88,13 +88,13 @@ export default function Navbar({ dict }: { dict: NavDict }) {
 
   return (
     <motion.div
-      className="fixed py-8 px-8 w-full flex justify-between items-center text-[1.4rem] z-50"
+      className="fixed py-6 sm:py-8 px-6 sm:px-8 w-full max-w-[100vw] flex justify-between items-center text-[1.4rem] z-50"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={transition}
     >
       <Logo scrollTo={scrollTo} />
-      <div className='hidden md:block'>
+      <div className='hidden nav:block absolute left-1/2 -translate-x-1/2'>
         <NavLinks scrollTo={scrollTo} dict={dict} activeSection={activeSection} />
       </div>
       <div className="flex items-center gap-4">
@@ -114,7 +114,7 @@ function Logo({ scrollTo }: { scrollTo: (target: string) => void }) {
       onClick={() => scrollTo('top')}
     >
       <Image
-        className="rounded-md w-15 opacity-90"
+        className="rounded-md w-12 sm:w-15 opacity-90"
         src={'/logo.png'}
         alt={'logo'}
         width={735}
@@ -128,7 +128,7 @@ function CTA({ dict }: { dict: NavDict }) {
   return (
     <BookingWrapper theme="light">
       <motion.div
-        className="inline-block"
+        className="inline-block h-full"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={transition}

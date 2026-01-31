@@ -55,10 +55,10 @@ export default function Services({ dict }: { dict: ServicesDict }) {
     <section
       id="services"
       ref={containerRef}
-      className="relative py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
+      className="relative w-full max-w-[100vw] overflow-x-hidden py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
     >
 
-      <div className="relative z-10 max-w-7xl mx-auto">
+      <div className="relative z-10 w-full">
         {/* Section Header */}
         <motion.div
           className="mb-14 md:mb-20"
@@ -69,13 +69,13 @@ export default function Services({ dict }: { dict: ServicesDict }) {
           <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
             {dict.label}
           </span>
-          <h2 className="text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
             {dict.title}
           </h2>
         </motion.div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-8">
           {services.map((service, index) => (
             <ServiceCard
               key={service.title}
@@ -160,7 +160,7 @@ function ServiceCard({
     <div style={{ perspective: "1000px" }} className="h-full">
       <motion.div
         ref={cardRef}
-        className="group relative h-full p-8 md:p-10 rounded-[20px] overflow-hidden border border-white/30"
+        className="group relative h-full p-6 sm:p-8 md:p-10 rounded-[20px] overflow-hidden border border-white/30"
         initial={{ opacity: 0, y: 50, boxShadow: glassBaseShadow }}
         animate={
           isInView
@@ -188,11 +188,18 @@ function ServiceCard({
         onMouseLeave={handleMouseLeave}
         style={{
           transformStyle: "preserve-3d",
-          background: "rgba(255, 255, 255, 0.21)",
-          backdropFilter: "blur(17px)",
-          WebkitBackdropFilter: "blur(17px)",
+          background: "rgba(255, 255, 255, 0.35)",
+          isolation: "isolate",
         }}
       >
+        {/* Glass blur layer - separate from content */}
+        <div 
+          className="absolute inset-0 rounded-[20px] -z-10"
+          style={{
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+          }}
+        />
         {/* Top edge highlight */}
         <div
           className="pointer-events-none absolute top-0 left-0 right-0 h-[1px]"

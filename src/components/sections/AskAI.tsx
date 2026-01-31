@@ -14,6 +14,7 @@ export type AskAIDict = {
   titleHighlight: string;
   subtitle: string;
   placeholder: string;
+  placeholderShort: string;
   sendButton: string;
   suggestedQuestions: string[];
   aiName: string;
@@ -30,6 +31,15 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   const [input, setInput] = useState("");
   const [token, setToken] = useState<string | null>(null);
   const [isScrollable, setIsScrollable] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen size for shorter placeholder
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   // Store token in a ref so sendMessage always has access to latest value
   const tokenRef = useRef<string | null>(null);
   useEffect(() => {
@@ -219,7 +229,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
     <section
       id="ask-ai"
       ref={containerRef}
-      className="relative py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden scroll-mt-32"
+      className="relative py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden scroll-mt-32 max-w-[100vw]"
     >
       {/* Captcha Logic - runs invisibly in background */}
       {!token && (
@@ -358,7 +368,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               {allMessages.length === 0 && (
                 <motion.div
                   key="suggested-questions"
-                  className="absolute bottom-0 left-0 right-0 pb-4 px-8 pointer-events-none"
+                  className="hidden sm:block absolute bottom-0 left-0 right-0 pb-4 px-8 pointer-events-none"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0, transition: { duration: 0.15 } }}
@@ -392,8 +402,8 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={dict.placeholder}
-                  className="w-full px-6 py-4 pr-14 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 focus:border-[#0077cc]/50 focus:outline-none focus:ring-2 focus:ring-[#0077cc]/20 text-black placeholder:text-black/40 transition-all duration-300"
+                  placeholder={isMobile ? dict.placeholderShort : dict.placeholder}
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 rounded-full bg-white/60 backdrop-blur-sm border border-white/40 focus:border-[#0077cc]/50 focus:outline-none focus:ring-2 focus:ring-[#0077cc]/20 text-black placeholder:text-black/40 placeholder:truncate transition-all duration-300 text-sm sm:text-base"
                   style={{
                     boxShadow:
                       "inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05)",
@@ -403,7 +413,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               <motion.button
                 type="submit"
                 disabled={!input.trim() || isLoading || !token}
-                className="w-14 h-14 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] disabled:from-black/20 disabled:to-black/30 flex items-center justify-center text-white shadow-lg disabled:shadow-none cursor-pointer disabled:cursor-not-allowed"
+                className="w-11 h-11 sm:w-14 sm:h-14 shrink-0 rounded-full bg-linear-to-br from-[#0077cc] to-[#003e7c] disabled:from-black/20 disabled:to-black/30 flex items-center justify-center text-white shadow-lg disabled:shadow-none cursor-pointer disabled:cursor-not-allowed"
                 whileHover={!input.trim() || isLoading ? {} : { scale: 1.05 }}
                 whileTap={!input.trim() || isLoading ? {} : { scale: 0.95 }}
                 transition={{ duration: 0.15 }}
@@ -417,20 +427,6 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
             </div>
           </form>
         </motion.div>
-
-        {/* Decorative elements */}
-        <motion.div
-          className="absolute -top-20 -right-20 w-64 h-64 bg-[#0077cc]/5 rounded-full blur-3xl pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 1.5, delay: 0.5 }}
-        />
-        <motion.div
-          className="absolute -bottom-20 -left-20 w-80 h-80 bg-[#0077cc]/5 rounded-full blur-3xl pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 1.5, delay: 0.7 }}
-        />
       </div>
     </section>
   );
@@ -444,21 +440,28 @@ function WelcomeMessage({ dict }: { dict: AskAIDict }) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
       transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-      className="flex items-start gap-4"
+      className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-5"
     >
-      {/* Avatar */}
-      <motion.div
-        className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg bg-linear-to-br from-[#0077cc] to-[#003e7c]"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-      >
-        <Bot className="w-5 h-5 text-white" />
-      </motion.div>
+      {/* Avatar + Name row on mobile, just avatar on desktop */}
+      <div className="flex items-center gap-2 shrink-0">
+        <motion.div
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 shadow-lg bg-linear-to-br from-[#0077cc] to-[#003e7c]"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+        </motion.div>
+        {/* Name shown inline on mobile only */}
+        <span className="text-xs text-black/50 font-medium uppercase tracking-wider sm:hidden">
+          {dict.aiName}
+        </span>
+      </div>
 
       {/* Message Content */}
       <div className="flex-1 min-w-0">
-        <span className="text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5 block">
+        {/* Name shown above content on desktop only */}
+        <span className="hidden sm:block text-xs text-black/50 font-medium uppercase tracking-wider mb-1.5">
           {dict.aiName}
         </span>
         <div className="text-black/90 text-[15px] leading-relaxed">

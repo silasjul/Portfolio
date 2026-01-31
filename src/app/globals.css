@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --breakpoint-nav: 1150px;
   --breakpoint-3xl: 2500px;
   --font-family: var(--font-playfair);
   --color-background: var(--background);

@@ -123,6 +123,7 @@ export const en = {
     subtitle:
       "Ask our AI about your project requirements, our capabilities, or anything else you'd like to know.",
     placeholder: "Ask about your project requirements...",
+    placeholderShort: "Ask a question...",
     sendButton: "Send",
     suggestedQuestions: [
       "What technologies do you specialize in?",

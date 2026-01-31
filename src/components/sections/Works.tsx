@@ -61,12 +61,12 @@ export default function Works({ dict }: { dict: WorksDict }) {
     <section
       id="works"
       ref={containerRef}
-      className="relative py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32"
+      className="relative py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent scroll-mt-32 max-w-[100vw] overflow-x-hidden"
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div
-          className="mb-20 flex flex-col md:flex-row md:items-end md:justify-between"
+          className="mb-10 sm:mb-14 md:mb-20 flex flex-col md:flex-row md:items-end md:justify-between"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -75,7 +75,7 @@ export default function Works({ dict }: { dict: WorksDict }) {
             <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
               {dict.label}
             </span>
-            <h2 className="text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
               {dict.title}
             </h2>
           </div>

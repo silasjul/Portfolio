@@ -26,44 +26,45 @@ export default function Contact({ dict }: { dict: ContactDict }) {
   return (
     <section
       ref={containerRef}
-      className="relative py-32 px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden"
+      className="relative py-16 sm:py-24 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden max-w-[100vw]"
     >
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24">
           {/* Left Column - CTA */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            className="flex flex-col"
           >
-            <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
+            <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full w-fit">
               {dict.label}
             </span>
-            <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-(family-name:--font-playfair)">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 mb-6 font-(family-name:--font-playfair)">
               {dict.title}
               <br />
               {dict.titleLine2}
             </h2>
-            <p className="text-black/70 text-lg max-w-md mb-10 leading-relaxed">
+            <p className="text-black/70 text-base sm:text-lg max-w-md mb-8 leading-relaxed">
               {dict.description}
             </p>
 
             {/* Main CTA Button */}
             <BookingWrapper theme="light">
               <motion.div
-                className="group inline-flex items-center gap-4 px-8 py-5 bg-black text-white rounded-full shadow-md hover:bg-white hover:text-black text-lg font-base transition-colors duration-300 cursor-pointer"
+                className="group flex items-center justify-center gap-4 px-6 sm:px-8 py-4 sm:py-5 bg-black text-white rounded-full shadow-md hover:bg-white hover:text-black text-base sm:text-lg font-base transition-colors duration-300 cursor-pointer w-full sm:w-auto sm:inline-flex"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.2 }}
               >
                 <span>{dict.cta}</span>
                 <motion.div
-                  className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-black/10 flex items-center justify-center transition-colors duration-300"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 group-hover:bg-black/10 flex items-center justify-center transition-colors duration-300"
                   animate={{ x: [0, 5, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </motion.div>
               </motion.div>
             </BookingWrapper>

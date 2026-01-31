@@ -43,11 +43,11 @@ export default function About({ dict }: { dict: AboutDict }) {
     <section
       id="about"
       ref={containerRef}
-      className="relative py-16 md:py-32 px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden scroll-mt-32"
+      className="relative py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden scroll-mt-32 max-w-[100vw]"
     >
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
+        <div className="grid nav:grid-cols-2 gap-16 lg:gap-24">
           {/* Left Column - Text */}
           <div>
             <motion.div
@@ -58,7 +58,7 @@ export default function About({ dict }: { dict: AboutDict }) {
               <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
                 {dict.label}
               </span>
-              <h2 className="text-5xl md:text-7xl text-black mt-4 mb-8 font-(family-name:--font-playfair)">
+              <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 mb-8 font-(family-name:--font-playfair)">
                 {dict.title}
                 <br />
                 <span className="italic">{dict.titleItalic}</span> {dict.titleEnd}
