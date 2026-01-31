@@ -61,7 +61,7 @@ export default function Services({ dict }: { dict: ServicesDict }) {
       <div className="relative z-10 w-full">
         {/* Section Header */}
         <motion.div
-          className="mb-14 md:mb-20"
+          className="mb-8 md:mb-20"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -75,7 +75,7 @@ export default function Services({ dict }: { dict: ServicesDict }) {
         </motion.div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-8">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
           {services.map((service, index) => (
             <ServiceCard
               key={service.title}
@@ -193,7 +193,7 @@ function ServiceCard({
         }}
       >
         {/* Glass blur layer - separate from content */}
-        <div 
+        <div
           className="absolute inset-0 rounded-[20px] -z-10"
           style={{
             backdropFilter: "blur(12px)",

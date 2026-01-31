@@ -26,11 +26,11 @@ export default function Contact({ dict }: { dict: ContactDict }) {
   return (
     <section
       ref={containerRef}
-      className="relative py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden max-w-[100vw]"
+      className="relative py-10 md:py-32 px-5 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden max-w-[100vw]"
     >
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-24">
           {/* Left Column - CTA */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -41,12 +41,12 @@ export default function Contact({ dict }: { dict: ContactDict }) {
             <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full w-fit">
               {dict.label}
             </span>
-            <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 mb-6 font-(family-name:--font-playfair)">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 mb-4 md:mb-6 font-(family-name:--font-playfair)">
               {dict.title}
               <br />
               {dict.titleLine2}
             </h2>
-            <p className="text-black/70 text-base sm:text-lg max-w-md mb-8 leading-relaxed">
+            <p className="text-black/70 text-sm sm:text-lg max-w-md mb-6 md:mb-8 leading-relaxed">
               {dict.description}
             </p>
 
@@ -73,7 +73,7 @@ export default function Contact({ dict }: { dict: ContactDict }) {
           {/* Right Column - Contact Info */}
           <div className="flex items-center min-w-0">
             <motion.div
-              className="space-y-8 w-full"
+              className="space-y-4 md:space-y-8 w-full"
               initial={{ opacity: 0, y: 40 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{
@@ -130,7 +130,7 @@ function ContactCard({
 }) {
   const content = (
     <motion.div
-      className="group flex items-center gap-6 p-6 rounded-[20px]  transition-colors duration-300 overflow-hidden relative"
+      className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 rounded-[16px] md:rounded-[20px] transition-colors duration-300 overflow-hidden relative"
       initial={{ opacity: 0, x: 30 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] }}
@@ -155,14 +155,14 @@ function ContactCard({
           background: "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))",
         }}
       />
-      <div className="relative z-10 w-14 h-14 rounded-xl bg-[#0077cc]/10 flex items-center justify-center group-hover:bg-[#0077cc]/20 transition-colors duration-300">
-        <Icon className="w-6 h-6 text-[#0077cc]" />
+      <div className="relative z-10 w-11 h-11 md:w-14 md:h-14 rounded-lg md:rounded-xl bg-[#0077cc]/10 flex items-center justify-center group-hover:bg-[#0077cc]/20 transition-colors duration-300 shrink-0">
+        <Icon className="w-5 h-5 md:w-6 md:h-6 text-[#0077cc]" />
       </div>
-      <div className="relative z-10">
-        <span className="text-black/60 text-sm uppercase tracking-wider block font-medium">
+      <div className="relative z-10 min-w-0">
+        <span className="text-black/60 text-xs md:text-sm uppercase tracking-wider block font-medium">
           {label}
         </span>
-        <span className="text-black text-xl">{value}</span>
+        <span className="text-black text-base md:text-xl truncate block">{value}</span>
       </div>
     </motion.div>
   );

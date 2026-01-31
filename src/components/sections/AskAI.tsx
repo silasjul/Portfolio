@@ -229,7 +229,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
     <section
       id="ask-ai"
       ref={containerRef}
-      className="relative py-16 md:py-32 px-6 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden scroll-mt-32 max-w-[100vw]"
+      className="relative py-10 md:py-32 px-5 sm:px-8 md:px-16 lg:px-24 bg-transparent overflow-hidden scroll-mt-32 max-w-[100vw]"
     >
       {/* Captcha Logic - runs invisibly in background */}
       {!token && (
@@ -241,7 +241,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
       <div className="relative z-10 max-w-4xl mx-auto">
         {/* Section Header */}
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 md:mb-12"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -250,11 +250,11 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
             <Sparkles className="w-4 h-4" />
             {dict.label}
           </span>
-          <h2 className="text-4xl md:text-6xl lg:text-7xl text-black mt-6 mb-4 font-(family-name:--font-playfair) leading-tight">
+          <h2 className="text-3xl md:text-6xl lg:text-7xl text-black mt-4 md:mt-6 mb-3 md:mb-4 font-(family-name:--font-playfair) leading-tight">
             {dict.title}{" "}
             <span className="italic text-[#0077cc]">{dict.titleHighlight}</span>
           </h2>
-          <p className="text-black/70 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-black/70 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
             {dict.subtitle}
           </p>
         </motion.div>
@@ -301,7 +301,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               onScroll={handleScroll}
               onWheel={handleWheel}
               {...(isScrollable ? { 'data-lenis-prevent': true } : {})}
-              className="h-100 md:h-[450px] overflow-y-auto overscroll-contain p-6 md:p-8 space-y-6 chat-scrollbar"
+              className="h-72 md:h-[450px] overflow-y-auto overscroll-contain p-4 md:p-8 space-y-4 md:space-y-6 chat-scrollbar"
             >
               {/* Welcome message - always shown first */}
               <WelcomeMessage dict={dict} />
