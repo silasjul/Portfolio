@@ -15,7 +15,7 @@ My freelancing website
 </div>
 
 ## Description
-I wanted to start freelancing, so I'm creating a site showcasing my work and services as a freelancer specializing in custom website development with React and smart AI automation.
+I wanted to start freelancing, so I'm creating a site.
 
 ## Features
 - Awesome animations.
