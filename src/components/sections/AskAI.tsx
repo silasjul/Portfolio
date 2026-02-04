@@ -179,24 +179,62 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
   // Only prevent page scroll when chat is scrollable and scroll would stay within bounds
   const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
     if (!messagesContainerRef.current) return;
-    
+
     const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
     const isScrollable = scrollHeight > clientHeight;
-    
+
     if (!isScrollable) {
       // Chat is not overflowing, allow page scroll
       return;
     }
-    
+
     const scrollingDown = e.deltaY > 0;
     const scrollingUp = e.deltaY < 0;
     const isAtTop = scrollTop <= 0;
     const isAtBottom = scrollHeight - scrollTop <= clientHeight;
-    
+
     // Only stop propagation if the scroll would stay within the chat
     if ((scrollingDown && !isAtBottom) || (scrollingUp && !isAtTop)) {
       e.stopPropagation();
     }
+  }, []);
+
+  // Track touch start position for mobile scroll handling
+  const touchStartRef = useRef<{ y: number; scrollTop: number } | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    if (!messagesContainerRef.current) return;
+    touchStartRef.current = {
+      y: e.touches[0].clientY,
+      scrollTop: messagesContainerRef.current.scrollTop,
+    };
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    if (!messagesContainerRef.current || !touchStartRef.current) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+    const isContentScrollable = scrollHeight > clientHeight;
+
+    // If chat content is not scrollable, allow page scroll (don't prevent default)
+    if (!isContentScrollable) {
+      return;
+    }
+
+    const touchY = e.touches[0].clientY;
+    const deltaY = touchStartRef.current.y - touchY;
+    const scrollingDown = deltaY > 0;
+    const scrollingUp = deltaY < 0;
+    const isAtTop = scrollTop <= 0;
+    const isAtBottom = scrollHeight - scrollTop <= clientHeight + 1; // +1 for rounding
+
+    // Allow page scroll if at boundaries and trying to scroll beyond
+    if ((scrollingUp && isAtTop) || (scrollingDown && isAtBottom)) {
+      return;
+    }
+
+    // Prevent page scroll only when scrolling within chat bounds
+    e.stopPropagation();
   }, []);
 
   // Auto-scroll when messages change or loading state changes, if stuck to bottom
@@ -277,7 +315,7 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
             <Sparkles className="w-4 h-4" />
             {dict.label}
           </span>
-          <h2 className="text-3xl md:text-6xl lg:text-7xl text-black mt-4 md:mt-6 mb-3 md:mb-4 font-(family-name:--font-playfair) leading-tight">
+          <h2 className="text-3xl md:text-6xl lg:text-7xl text-black mt-4 md:mt-6 mb-3 md:mb-4 leading-tight">
             {dict.title}{" "}
             <span className="italic text-[#0077cc]">{dict.titleHighlight}</span>
           </h2>
@@ -327,8 +365,12 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
               ref={messagesContainerRef}
               onScroll={handleScroll}
               onWheel={handleWheel}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
               {...(isScrollable ? { 'data-lenis-prevent': true } : {})}
-              className="h-72 md:h-[450px] overflow-y-auto overscroll-contain p-4 md:p-8 space-y-4 md:space-y-6 chat-scrollbar"
+              className={`h-72 md:h-[450px] overflow-y-auto p-4 md:p-8 space-y-4 md:space-y-6 chat-scrollbar ${isScrollable ? 'overscroll-contain' : 'overscroll-auto'
+                }`}
+              style={{ touchAction: isScrollable ? 'pan-y' : 'auto' }}
             >
               {/* Welcome message - always shown first */}
               <WelcomeMessage dict={dict} />
@@ -454,8 +496,8 @@ export default function AskAI({ dict }: { dict: AskAIDict }) {
                     )}
                   </motion.button>
                 </TooltipTrigger>
-                <TooltipContent 
-                  side="top" 
+                <TooltipContent
+                  side="top"
                   sideOffset={8}
                   className="bg-white/90 backdrop-blur-sm text-black border border-black/10 shadow-lg"
                   arrowClassName="bg-white/90 fill-white/90"

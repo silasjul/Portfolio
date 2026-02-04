@@ -71,7 +71,7 @@ export default function About({ dict }: { dict: AboutDict }) {
               <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
                 {dict.label}
               </span>
-              <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 mb-5 md:mb-8 font-(family-name:--font-playfair)">
+              <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 mb-5 md:mb-8">
                 {dict.title}
                 <br />
                 <span className="italic">{dict.titleItalic}</span> {dict.titleEnd}
@@ -171,7 +171,7 @@ export default function About({ dict }: { dict: AboutDict }) {
                       background: "linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3))",
                     }}
                   />
-                  <div className="relative z-10 text-2xl md:text-5xl text-[#0077cc] font-(family-name:--font-playfair) mb-1 md:mb-2">
+                  <div className="relative z-10 text-2xl md:text-5xl text-[#0077cc] mb-1 md:mb-2">
                     {item.value}
                   </div>
                   <div className="relative z-10 text-black/70 text-xs md:text-sm uppercase tracking-wider font-medium">

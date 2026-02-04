@@ -75,7 +75,7 @@ export default function Works({ dict }: { dict: WorksDict }) {
             <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full">
               {dict.label}
             </span>
-            <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 font-(family-name:--font-playfair)">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4">
               {dict.title}
             </h2>
           </div>
@@ -145,7 +145,7 @@ function CapabilityRow({
             </span>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="text-xl md:text-4xl text-black font-(family-name:--font-playfair) group-hover:text-[#0077cc] transition-colors duration-300">
+                <h3 className="text-xl md:text-4xl text-black group-hover:text-[#0077cc] transition-colors duration-300">
                   {item.title}
                 </h3>
                 {/* Mobile expand indicator */}

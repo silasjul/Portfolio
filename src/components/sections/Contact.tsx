@@ -123,7 +123,7 @@ export default function Contact({ dict, lang = "en" }: { dict: ContactDict; lang
             <span className="inline-block text-[#0077cc] text-sm tracking-[0.3em] uppercase font-medium bg-white/60 backdrop-blur-sm px-3 py-1 rounded-full w-fit">
               {dict.label}
             </span>
-            <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 mb-4 md:mb-6 font-(family-name:--font-playfair)">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl text-black mt-4 mb-4 md:mb-6">
               {dict.title}
               <br />
               {dict.titleLine2}
