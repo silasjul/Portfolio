@@ -201,7 +201,7 @@ export default function Contact({ dict, lang = "en" }: { dict: ContactDict; lang
                           damping: 15,
                           delay: 0.1,
                         }}
-                        className="w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center mb-6 shadow-lg shadow-green-500/30"
+                        className="w-20 h-20 rounded-full bg-gradient-to-br from-green-300 to-green-500 flex items-center justify-center mb-6 shadow-lg shadow-green-500/30"
                       >
                         <CheckCircle className="w-10 h-10 text-white" />
                       </motion.div>
@@ -243,7 +243,7 @@ export default function Contact({ dict, lang = "en" }: { dict: ContactDict; lang
                           damping: 15,
                           delay: 0.1,
                         }}
-                        className="w-20 h-20 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center mb-6 shadow-lg shadow-red-500/30"
+                        className="w-20 h-20 rounded-full bg-gradient-to-br from-red-300 to-red-500 flex items-center justify-center mb-6 shadow-lg shadow-red-500/30"
                       >
                         <AlertCircle className="w-10 h-10 text-white" />
                       </motion.div>
@@ -285,7 +285,7 @@ export default function Contact({ dict, lang = "en" }: { dict: ContactDict; lang
                           damping: 15,
                           delay: 0.1,
                         }}
-                        className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-6 shadow-lg shadow-orange-500/30"
+                        className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 flex items-center justify-center mb-6 shadow-lg shadow-orange-500/30"
                       >
                         <AlertCircle className="w-10 h-10 text-white" />
                       </motion.div>
