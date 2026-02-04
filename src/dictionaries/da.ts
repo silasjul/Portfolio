@@ -5,7 +5,7 @@ export const da = {
     about: "Om os",
     "ask-ai": "AI FAQ",
     contact: "Kontakt",
-    getInTouch: "Lad os snakke",
+    getInTouch: "Book et møde",
   },
   hero: {
     line1: "Smartere",
@@ -105,13 +105,30 @@ export const da = {
     titleLine2: "dit projekt?",
     description:
       "Vi er altid klar på en snak om nye muligheder og projekter. Lad os tale om, hvordan vi kan arbejde sammen og hjælpe dig med at nå dine mål.",
-    cta: "Kontakt os",
-    emailLabel: "E-mail",
-    email: "contact@silab.dk",
-    locationLabel: "Placering",
-    location: "Danmark",
-    responseLabel: "Svartid",
-    response: "Inden for 24 timer",
+    form: {
+      name: "Navn",
+      namePlaceholder: "Dit navn",
+      email: "E-mail",
+      emailPlaceholder: "din@email.dk",
+      message: "Besked",
+      messagePlaceholder:
+        "Fortæl os om dit projekt eller stil os et spørgsmål...",
+      submit: "Send besked",
+      sending: "Sender...",
+      successTitle: "Besked sendt!",
+      successMessage: "Vi vender tilbage inden for 24 timer.",
+      errorTitle: "Noget gik galt",
+      errorMessage:
+        "Prøv igen eller send os en e-mail direkte på contact@silab.dk",
+      nameRequired: "Indtast venligst dit navn",
+      emailRequired: "Indtast venligst din e-mail",
+      emailInvalid: "Indtast venligst en gyldig e-mail",
+      messageRequired: "Indtast venligst en besked",
+      messageMin: "Beskeden skal være mindst 10 tegn",
+      rateLimitTitle: "For mange beskeder",
+      rateLimitMessage:
+        "Du kan kun sende 3 beskeder om dagen. Prøv igen i morgen eller send os en e-mail direkte på contact@silab.dk",
+    },
   },
   footer: {
     copyright: "© 2026 Silab. Alle rettigheder forbeholdes.",

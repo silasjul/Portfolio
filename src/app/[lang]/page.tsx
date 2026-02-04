@@ -37,7 +37,7 @@ export default async function Home({ params }: { params: Promise<{ lang: 'en' | 
           <AskAI dict={dict.askAI} />
         </div>
         <div id="contact">
-          <Contact dict={dict.contact} />
+          <Contact dict={dict.contact} lang={lang} />
         </div>
         <div id="footer">
           <Footer footerDict={dict.footer} navDict={dict.nav} />

@@ -33,18 +33,35 @@ export default function Navbar({ dict }: { dict: NavDict }) {
 
     if (sectionElements.length === 0) return;
 
+    // Track which sections are currently visible
+    const visibleSections = new Set<string>();
+
     const observer = new IntersectionObserver(
       (entries) => {
         // Don't update if we're in a click-locked state
         if (isClickLockedRef.current) return;
 
-        // Find the entry that is most in view (highest intersection ratio)
-        // or the one closest to the center of the viewport
+        // Update the set of visible sections
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-            return;
+            visibleSections.add(entry.target.id);
+          } else {
+            visibleSections.delete(entry.target.id);
           }
+        }
+
+        // If any sections are visible, set the first one (in DOM order) as active
+        if (visibleSections.size > 0) {
+          // Find the first visible section in our defined order
+          for (const section of sections) {
+            if (visibleSections.has(section)) {
+              setActiveSection(section);
+              return;
+            }
+          }
+        } else {
+          // No sections visible - we're in the hero area
+          setActiveSection(null);
         }
       },
       {
