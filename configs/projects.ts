@@ -17,6 +17,7 @@ export const PROJECTS: Project[] = [
   { image: '/cloth.png', url: 'https://cloth.silaskierstein.com/' },
   { image: '/ascii.png', url: 'https://ascii.silaskierstein.com/' },
   { image: '/bottleship.png', url: 'https://bottleship.silaskierstein.com/' },
+  { image: '/chess.png', url: 'https://chess.silaskierstein.com/' },
 ]
 
 export const IMAGES = PROJECTS.map((p) => p.image)
